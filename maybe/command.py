@@ -79,3 +79,9 @@ class Command(object):
 
     def _default_command(self):
         return self.mapping.get('default')
+
+    def __eq__(self, other):
+        return self.__dict__ == other.__dict__
+
+    def __hash__(self):
+        return hash(frozenset(self.__dict__))
