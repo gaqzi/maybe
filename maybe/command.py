@@ -75,4 +75,7 @@ class Command(object):
         return result
 
     def _get_command(self, path):
-        return self.mapping[str(path)]
+        return self.mapping.get(str(path)) or self._default_command()
+
+    def _default_command(self):
+        return self.mapping.get('default')

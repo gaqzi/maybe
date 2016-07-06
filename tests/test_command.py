@@ -21,6 +21,13 @@ class TestCommand(object):
         assert command.executioner.command == 'python setup.py test'
         assert command.executioner.stdout.getvalue() == '.... OK'
 
+    def test_run_command_with_default_path(self):
+        command = Command(name='test', mapping=dict(default='python setup.py test'))
+        command.executioner = NullExecutioner(exit_code=0, run_time=0.01, output='.... OK')
+
+        command.run(paths=[Path('extensions/cool-extension/')])
+
+        assert command.executioner.command == 'python setup.py test'
 
 class TestCommandResults(object):
     def test_no_results_is_negative(self):
