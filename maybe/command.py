@@ -65,6 +65,13 @@ class Command(object):
     executioner = None
 
     def __init__(self, name, mapping):
+        """
+
+        Args:
+            name (str): The name of this command
+            mapping (Dict[maybe.Path, Command]): What commands to run at what paths.
+                The key ``default`` is used when no match is found.
+        """
         self.name = name
         self.mapping = mapping
 
