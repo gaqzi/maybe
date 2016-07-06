@@ -43,7 +43,8 @@ class TestConfigParser(object):
         ]))
 
         assert maybe.read_config(conf_file) == {
-            'paths': [Path('extensions/'), Path('frontend/js')]
+            'paths': [Path('extensions/'), Path('frontend/js')],
+            'commands': set()
         }
 
     def test_reads_a_list_of_commands_for_paths(self):
@@ -61,10 +62,10 @@ class TestConfigParser(object):
         config = maybe.read_config(conf_file)
 
         assert config['commands'] == {
-            'test': {
+            maybe.Command('test', {
                 'default': 'python setup.py test',
                 'frontend/js': 'npm test'
-            }
+            })
         }
 
 

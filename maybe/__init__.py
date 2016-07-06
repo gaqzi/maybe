@@ -36,6 +36,8 @@ def read_config(conf_file):
     config = yaml.load(conf_file)
     config['paths'] = [Path(path) for path in config['paths']]
 
+    config['commands'] = {Command(name, mapping) for name, mapping in config.get('commands', {}).items()}
+
     return config
 
 
