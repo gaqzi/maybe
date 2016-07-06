@@ -5,9 +5,24 @@ from maybe import Path
 from maybe.executioner import NullExecutioner
 
 
-class TestNullExecutioner(object):
+class BaseTestExecutioner(object):
+    def test_command_is_none_returns_none_result(self):
+        executioner = self._executioner()
+
+        result = executioner.run(Path('/tmp'), None)
+
+        assert result == CommandResult.none(), 'Result was not none'
+
+    def _executioner(self):
+        raise NotImplementedError('Has not implemented _executioner()')
+
+
+class TestNullExecutioner(BaseTestExecutioner):
+    def _executioner(self):
+        return NullExecutioner(0)
+
     def test_run_returns_command_result_with_passed_in_exit_code(self):
-        executioner = NullExecutioner(0)
+        executioner = self._executioner()
 
         assert executioner.run(Path('/m000'), 'true') == CommandResult(0, 0, Path('/m000'))
 
@@ -23,7 +38,10 @@ class TestNullExecutioner(object):
         assert executioner.stdout.getvalue() == 'Hello!'
 
 
-class TestExecutioner(object):
+class TestExecutioner(BaseTestExecutioner):
+    def _executioner(self):
+        return Executioner(stdout=StringIO())
+
     def test_run_returns_command_result_success_when_successful(self):
         executioner = Executioner()
 

@@ -29,6 +29,17 @@ class TestCommand(object):
 
         assert command.executioner.command == 'python setup.py test'
 
+    def test_command_isnt_affect_when_no_path_matches(self):
+        command = Command(name='test', mapping=dict(a='python setup.py test'))
+        command.executioner = NullExecutioner(exit_code=0, run_time=0.01, output='.... OK')
+
+        result = command.run(paths=[Path('extensions/cool-extension/')])
+
+        assert result
+        assert result.run_time == 0.0
+        assert result.paths == []
+        assert command.executioner.command is None
+
     def test_commands_are_equal_if_the_values_are_equal(self):
         assert Command(name='test', mapping=dict(a='npm test')) == Command(name='test', mapping=dict(a='npm test'))
 
@@ -72,6 +83,12 @@ class TestCommandResults(object):
     def test_no_results_no_paths(self):
         assert CommandResults().paths == []
 
+    def test_paths_doesnt_retain_none_paths(self):
+        result = CommandResults()
+        result.add(CommandResult.none())
+
+        assert result.paths == []
+
     def test_results_returns_list_of_paths_results_are_for(self):
         result = CommandResults()
         result.add(CommandResult(0, 0.1, '/m000'))
@@ -100,3 +117,6 @@ class TestCommandResult(object):
 
     def test_command_results_are_equal_if_they_contain_the_same_attrs(self):
         assert CommandResult(0, 0.1, '/m000') == CommandResult(0, 0.1, '/m000')
+
+    def test_none_factory_method(self):
+        assert CommandResult.none() == CommandResult(0, 0, None)

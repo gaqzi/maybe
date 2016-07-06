@@ -6,7 +6,15 @@ from maybe.command import CommandResult
 from maybe.utils import timer
 
 
-class NullExecutioner(object):
+class BaseExecutioner(object):
+    def run(self, path, command):
+        raise NotImplementedError('run is not implemented')
+
+    def _null_response(self):
+        return CommandResult.none()
+
+
+class NullExecutioner(BaseExecutioner):
     def __init__(self, exit_code, run_time=0, output='', stdout=None, stderr=None):
         self.exit_code = exit_code
         self.run_time = run_time
@@ -19,16 +27,22 @@ class NullExecutioner(object):
 
     def run(self, path, command):
         self.command = command
+        if command is None:
+            return self._null_response()
+
         self.stdout.write(self.output)
         return CommandResult(self.exit_code, self.run_time, path)
 
 
-class Executioner(object):
+class Executioner(BaseExecutioner):
     def __init__(self, stdout=sys.stdout, stderr=sys.stderr):
         self.stdout = stdout
         self.stderr = stderr
 
     def run(self, path, command):
+        if command is None:
+            return self._null_response()
+
         process, run_time = timer(lambda: self._run(command, path))
 
         return CommandResult(

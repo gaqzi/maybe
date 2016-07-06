@@ -17,6 +17,15 @@ class CommandResult(object):
     def __eq__(self, other):
         return self.__dict__ == other.__dict__
 
+    @classmethod
+    def none(cls):
+        """Returns a null object version of :class:`CommandResult`
+
+        Returns:
+            CommandResult: with all values set to 0 or None
+        """
+        return cls(0, 0, None)
+
 
 class CommandResults(object):
     def __init__(self):
@@ -43,7 +52,7 @@ class CommandResults(object):
 
     @property
     def paths(self):
-        return map(lambda x: x.path, self._results)
+        return [x.path for x in self._results if x.path is not None]
 
     def __bool__(self):
         return self.success
