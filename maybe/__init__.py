@@ -1,8 +1,12 @@
+from __future__ import unicode_literals
+
 import yaml
 
 from maybe.command import CommandResult, CommandResults, Command
-from maybe.executioner import Executioner
+from maybe.executioners import Executioner
 from maybe.path import Path
+
+__version__ = '0.1.0'
 
 
 def match(lines, paths):
@@ -20,7 +24,7 @@ def match(lines, paths):
         for path in paths:
             matches.add(path.match(line))
 
-    return matches
+    return {x for x in matches if x}
 
 
 def read_config(conf_file):
@@ -39,5 +43,3 @@ def read_config(conf_file):
     config['commands'] = {Command(name, mapping) for name, mapping in config.get('commands', {}).items()}
 
     return config
-
-

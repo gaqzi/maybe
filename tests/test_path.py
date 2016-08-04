@@ -17,6 +17,11 @@ class TestPath(object):
 
         assert path.match('extensions/cool-extension/src/a.py')
 
+    def test_match_against_path_object(self):
+        path = Path('extensions/*/')
+
+        assert path.match(Path('extensions/cool-extension/'))
+
     def test_doesnt_match_against_glob_when_its_a_file(self):
         path = Path('extensions/*/')
 
@@ -44,3 +49,14 @@ class TestPath(object):
 
     def test__repr__has_a_marker_for_none_when_its_none(self):
         assert repr(Path(None)) == '<Path: <None>>'
+
+    def test_responds_to_startswith(self):
+        assert Path('/root').startswith('/')
+        assert not Path('root').startswith('/')
+
+    def test_path_can_be_concatenated_with_a_string(self):
+        assert (Path('/') + 'root') == '/root'
+        assert ('/' + Path('root')) == '/root'
+
+    def test_path_can_be_concatenated_with_another_path(self):
+        assert (Path('/') + Path('root')) == '/root'

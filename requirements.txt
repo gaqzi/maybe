@@ -1,2 +1,5 @@
 pytest
 pyaml
+docopts
+subprocess32
+six

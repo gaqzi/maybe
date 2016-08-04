@@ -9,7 +9,7 @@ class TestMatch(object):
         lines = ['test/m000.py']
         paths = [Path('extensions/cool-extension')]
 
-        assert maybe.match(lines, paths) == {Path(None)}
+        assert maybe.match(lines, paths) == set()
 
     def test_returns_unique_matched_paths(self):
         lines = [
@@ -67,5 +67,3 @@ class TestConfigParser(object):
                 'frontend/js': 'npm test'
             })
         }
-
-

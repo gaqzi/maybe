@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import os
 
 
@@ -16,14 +18,16 @@ class Path(object):
         """
 
         Args:
-            filename (str): A path in the repository that we're matching against
+            filename (Union(str, Path)): A path in the repository that we're matching against
 
         Returns:
             Path: A path object that correlates to the matched file.
               If there isn't a match returns a :class:`Path` with the
               value ``None``.
         """
-        if filename.startswith(self.path):
+        if hasattr(filename, 'path'):
+            return self.match(filename.path)
+        elif filename.startswith(self.path):
             return self
         elif self.GLOB_CHARACTER in self.path:
             return Path(self._match_glob(filename))
@@ -74,3 +78,12 @@ class Path(object):
 
     def __nonzero__(self):
         return self.__bool__()
+
+    def startswith(self, needle):
+        return self.path.startswith(needle)
+
+    def __add__(self, other):
+        return '{0}{1}'.format(self.path, other)
+
+    def __radd__(self, other):
+        return '{0}{1}'.format(other, self.path)

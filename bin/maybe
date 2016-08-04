@@ -1,0 +1,37 @@
+#!/usr/bin/env python
+"""Maybe run a command if something has changed in a folder
+
+Usage:
+  maybe run <command> [<from_commit> [<to_commit>]]
+  maybe (-h | --help)
+  maybe --version
+
+Options:
+  -h --help   Show this screen
+  --version   Show version
+
+"""
+from __future__ import print_function, unicode_literals
+
+import sys
+
+from docopt import docopt
+
+import maybe
+
+if __name__ == '__main__':
+    arguments = docopt(__doc__, version='Maybe {0}'.format(maybe.__version__))
+    cli = maybe.CLI()
+
+    if arguments['run']:
+        result = cli.run(
+            command=arguments['<command>'],
+            from_commit=arguments['<from_commit>'],
+            to_commit=arguments['<to_commit>'],
+        )
+    else:
+        print('I have no idea how we ended up here', file=sys.stderr)
+        print(__doc__)
+        exit(1)
+
+    exit(0 if result else 1)

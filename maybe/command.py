@@ -1,8 +1,13 @@
+from __future__ import unicode_literals
+
+
 class CommandResult(object):
-    def __init__(self, exit_code, run_time, path):
+    def __init__(self, exit_code, run_time, path, output='', stderr=''):
         self.exit_code = exit_code
         self.run_time = run_time
         self.path = path
+        self.output = output
+        self.stderr = stderr
 
     @property
     def success(self):
@@ -75,18 +80,20 @@ class Command(object):
         self.name = name
         self.mapping = mapping
 
-    def run(self, paths):
+    def run(self, paths, executioner=None):
         """
 
         Args:
             paths (list[Path]): A list of paths to run this command against
+            executioner (maybe.Executioner): The executioner to run this command through
 
         Returns:
             CommandResults: The result of running this command
         """
         result = CommandResults()
+        executioner = executioner or self.executioner
         for path in paths:
-            result.add(self.executioner.run(path, self._get_command(path)))
+            result.add(executioner.run(path, self._get_command(path)))
 
         return result
 

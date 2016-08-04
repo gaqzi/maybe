@@ -1,8 +1,11 @@
-from StringIO import StringIO
+from __future__ import unicode_literals
+
+import os
+from io import StringIO
 
 from maybe import CommandResult, Executioner
 from maybe import Path
-from maybe.executioner import NullExecutioner
+from maybe.executioners import NullExecutioner
 
 
 class BaseTestExecutioner(object):
@@ -20,6 +23,9 @@ class BaseTestExecutioner(object):
 class TestNullExecutioner(BaseTestExecutioner):
     def _executioner(self):
         return NullExecutioner(0)
+
+    def test_takes_a_base_path_argument(self):
+        assert NullExecutioner(0, base_path='.').base_path == os.path.abspath('.')
 
     def test_run_returns_command_result_with_passed_in_exit_code(self):
         executioner = self._executioner()
@@ -41,6 +47,9 @@ class TestNullExecutioner(BaseTestExecutioner):
 class TestExecutioner(BaseTestExecutioner):
     def _executioner(self):
         return Executioner(stdout=StringIO())
+
+    def test_takes_a_base_path_argument(self):
+        assert Executioner(base_path='.').base_path == os.path.abspath('.')
 
     def test_run_returns_command_result_success_when_successful(self):
         executioner = Executioner()

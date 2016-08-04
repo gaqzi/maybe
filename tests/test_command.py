@@ -1,5 +1,5 @@
 from maybe import Command, CommandResults, CommandResult, Path
-from maybe.executioner import NullExecutioner
+from maybe.executioners import NullExecutioner
 
 
 class TestCommand(object):
