@@ -1,7 +1,12 @@
 maybe
 =====
 
-A tool to maybe run commands if something has changed
+A tool to maybe run commands if something has changed.
+
+**Note:** This isn't working yet. Practicing 
+[Readme Driven Development][rdd] here. :)
+
+[rdd]: http://tom.preston-werner.com/2010/08/23/readme-driven-development.html
 
 # How to use
 
