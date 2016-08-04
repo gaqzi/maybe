@@ -66,3 +66,7 @@ $ make test
 
 This will install all dependencies, check out the test repo, and then
 run all the tests.
+
+# License
+
+Beerware License
