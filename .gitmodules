@@ -1,0 +1,3 @@
+[submodule "tests/support/dummy"]
+	path = tests/support/dummy
+	url = git@github.com:gaqzi/maybe.git

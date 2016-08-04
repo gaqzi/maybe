@@ -7,8 +7,8 @@ from maybe.differs import subprocess
 
 
 class TestGit(object):
-    FIRST_GREEN_COMMIT = 'first-green'
-    FIRST_GREEN_COMMIT_PY = 'first-green-py'
+    FIRST_GREEN_COMMIT = '10aac02e05'
+    FIRST_GREEN_COMMIT_PY = '39e0889d06'
 
     def _differ(self):
         return Git(base_path='tests/support/dummy/')
