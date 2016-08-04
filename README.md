@@ -52,3 +52,17 @@ commands:  # Runs from the directory denoted by paths above
     default: bin/rspec spec
     frontend/js/: npm test
 ```
+
+# Contributing
+
+## Local development
+
+To get started make with your current global version of Python do:
+
+```shell
+$ make develop 
+$ make test
+```
+
+This will install all dependencies, check out the test repo, and then
+run all the tests.
