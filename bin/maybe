@@ -3,6 +3,7 @@
 
 Usage:
   maybe run <command> [<from_commit> [<to_commit>]]
+  maybe diff [<from_commit> [<to_commit>]]
   maybe (-h | --help)
   maybe --version
 
@@ -13,22 +14,48 @@ Options:
 """
 from __future__ import print_function, unicode_literals
 
+import os
 import sys
 
 from docopt import docopt
 
 import maybe
+from maybe.cli import CLI
+
+
+def get_config_file(filename='Maybefile'):
+    if os.path.exists(filename):
+        return os.path.abspath(filename)
+
+    raise Exception('No "Maybefile" available')
+
 
 if __name__ == '__main__':
     arguments = docopt(__doc__, version='Maybe {0}'.format(maybe.__version__))
-    cli = maybe.CLI()
+
+    cli = CLI(config=maybe.read_config(get_config_file()))
 
     if arguments['run']:
-        result = cli.run(
-            command=arguments['<command>'],
+        changed_projects = cli.changed_projects(
             from_commit=arguments['<from_commit>'],
             to_commit=arguments['<to_commit>'],
         )
+
+        result = cli.run(
+            command=arguments['<command>'],
+            paths=changed_projects,
+        )
+    elif arguments['diff']:
+        result = cli.changed_projects(
+            from_commit=arguments['<from_commit>'],
+            to_commit=arguments['<to_commit>'],
+        )
+
+        if result:
+            for folder in result:
+                print('\t{0}'.format(folder))
+        else:
+            print('Nothing changed.')
     else:
         print('I have no idea how we ended up here', file=sys.stderr)
         print(__doc__)
