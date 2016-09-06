@@ -2,6 +2,7 @@ from StringIO import StringIO
 
 import maybe
 from maybe import Path
+from path import path
 
 
 class TestMatch(object):
@@ -46,6 +47,14 @@ class TestConfigParser(object):
             'paths': [Path('extensions/'), Path('frontend/js')],
             'commands': set()
         }
+
+    def test_expands_a_globbed_path(self):
+        with path('tests/support/dummy/'):
+            assert maybe.read_config('Maybefile')['paths'] == [
+                Path('extensions/roles_and_permissions/'),
+                Path('extensions/rules/'),
+                Path('js/mobile/')
+            ]
 
     def test_reads_a_list_of_commands_for_paths(self):
         conf_file = StringIO('\n'.join([

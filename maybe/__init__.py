@@ -1,7 +1,10 @@
 from __future__ import unicode_literals
 
-import yaml
+import glob
+import itertools
 
+import six
+import yaml
 from maybe.command import CommandResult, CommandResults, Command
 from maybe.executioners import Executioner
 from maybe.path import Path
@@ -37,9 +40,22 @@ def read_config(conf_file):
     Returns:
         dict: A configuration dictionary
     """
-    config = yaml.load(conf_file)
-    config['paths'] = [Path(path) for path in config['paths']]
+    if isinstance(conf_file, six.string_types):
+        with open(conf_file, 'r') as fh:
+            config = yaml.load(fh)
+    else:
+        config = yaml.load(conf_file)
 
-    config['commands'] = {Command(name, mapping) for name, mapping in config.get('commands', {}).items()}
+    def expand_glob(path):
+        if '*' in path:
+            return [p for p in glob.glob(path)]
+        else:
+            return [path]
+
+    paths = [expand_glob(path) for path in config['paths']]
+    config['paths'] = [Path(path) for path in itertools.chain(*paths)]
+
+    config['commands'] = {Command(name, mapping)
+                          for name, mapping in config.get('commands', {}).items()}
 
     return config
