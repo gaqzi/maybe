@@ -1,0 +1,8 @@
+---
+paths:
+  - extensions/*/
+  - js/mobile/
+commands:
+  tests:
+    default: py.test
+    js/mobile/: npm test
