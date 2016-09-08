@@ -118,7 +118,3 @@ class Executioner(BaseExecutioner):
     def _add_command_output_logging(self):
         self._result_stdout = StringIO()
         self._result_stderr = StringIO()
-
-        # def _remove_command_output_logging(self):
-        #     delattr(self, '_result_stdout')
-        #     delattr(self, '_result_stderr')

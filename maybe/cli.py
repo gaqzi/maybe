@@ -16,16 +16,9 @@ class CLI(object):
         self.differ = differ or differs.Git(base_path)
 
     def run(self, command, paths):
-        cmd = next((c for c in self.config['commands'] if c.name == command),
-                   None)  # type: Command
+        cmd = next((c for c in self.config['commands'] if c.name == command), None)
         self.results = cmd.run(paths, self.executioner)
 
-        # for path in self._matched_paths(paths):
-        #     command = self._command_for(path=path, command=command)
-        #     path = os.path.join(self.base_dir, path)
-        #
-        #     self.results.add(command.run([path], self.executioner)._results[0])
-        #
         return self.results
 
     def successful(self):
