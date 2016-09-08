@@ -93,7 +93,10 @@ class Command(object):
         result = CommandResults()
         executioner = executioner or self.executioner
         for path in paths:
+            print('Running tests for {0}:'.format(path))
             result.add(executioner.run(path, self._get_command(path)))
+
+            print('')
 
         return result
 
