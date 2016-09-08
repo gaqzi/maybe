@@ -3,8 +3,8 @@
 default: test
 
 develop:
-	pip install -e .
 	pip install -r requirements.txt
+	pip install -e .
 	git submodule init && git submodule update
 
 test:
