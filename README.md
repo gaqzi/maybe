@@ -13,7 +13,7 @@ A tool to maybe run commands if something has changed.
 An example invocation of maybe:
 
 ```
-$ maybe run tests 19abc023 2514ecb1
+$ maybe command tests --from 19abc023 --to 2514ecb1
 Changed paths:
   - extensions/cool-extension/
   - frontend/js/
@@ -27,15 +27,6 @@ Running tests for .:
 OK
 
 All commands ended successfully and ran in 9.75s.
-```
-
-
-You can see what files changed between two commits using `diff`:
-
-```shell
-$ maybe diff earlier-commit later-commit
-extensions/cool-extension/somefile.py
-frontend/js/package.json
 ```
 
 # Configuration
