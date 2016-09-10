@@ -2,12 +2,12 @@ from __future__ import unicode_literals
 
 import os
 import subprocess
-import sys
 from io import StringIO
 
 import six
 
 from maybe.command import CommandResult
+from maybe.outputter import Outputter
 from maybe.utils import timer
 
 
@@ -51,27 +51,23 @@ class NullExecutioner(BaseExecutioner):
 
 
 class Executioner(BaseExecutioner):
-    def __init__(self, stdout=sys.stdout, stderr=sys.stderr, base_path='.'):
-        self.stdout = stdout
-        self.stderr = stderr
+    def __init__(self, outputter=None, base_path='.'):
+        if outputter is None:
+            outputter = Outputter()
+
+        self.outputter = outputter
         self.base_path = base_path
 
     def run(self, path, command):
         if command is None:
             return self._null_response()
 
-        self._add_command_output_logging()
         process, run_time = timer(lambda: self._run(command, path))
-
-        self._result_stdout.seek(0)
-        self._result_stderr.seek(0)
 
         return CommandResult(
             exit_code=process.returncode,
             run_time=run_time.total_seconds(),
             path=path,
-            output=self._result_stdout.read(),
-            stderr=self._result_stderr.read()
         )
 
     def _run(self, command, path):
@@ -94,8 +90,8 @@ class Executioner(BaseExecutioner):
 
         while process.returncode is None:
             stdout, stderr = process.communicate()
-            self._stdout(six.text_type(stdout))
-            self._stderr(six.text_type(stderr))
+            self.outputter.info.write(six.text_type(stdout))
+            self.outputter.error.write(six.text_type(stderr))
 
         return process
 
@@ -104,17 +100,3 @@ class Executioner(BaseExecutioner):
             path = os.path.abspath(os.path.join(self.base_path, path))
 
         return path
-
-    def _stdout(self, string):
-        self.stdout.write(string)
-        if callable(getattr(self._result_stdout, 'write', None)):
-            self._result_stdout.write(string)
-
-    def _stderr(self, string):
-        self.stderr.write(string)
-        if callable(getattr(self._result_stderr, 'write', None)):
-            self._result_stderr.write(string)
-
-    def _add_command_output_logging(self):
-        self._result_stdout = StringIO()
-        self._result_stderr = StringIO()

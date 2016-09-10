@@ -1,11 +1,16 @@
 from __future__ import unicode_literals
 
 import os
-from io import StringIO
 
 from maybe import CommandResult, Executioner
 from maybe import Path
 from maybe.executioners import NullExecutioner
+from maybe.outputter import Outputter
+
+try:
+    from unittest.mock import Mock
+except ImportError:
+    from mock import Mock
 
 
 class BaseTestExecutioner(object):
@@ -46,7 +51,7 @@ class TestNullExecutioner(BaseTestExecutioner):
 
 class TestExecutioner(BaseTestExecutioner):
     def _executioner(self):
-        return Executioner(stdout=StringIO())
+        return Executioner(outputter=Mock())
 
     def test_takes_a_base_path_argument(self):
         assert Executioner(base_path='.').base_path == os.path.abspath('.')
@@ -67,10 +72,21 @@ class TestExecutioner(BaseTestExecutioner):
         assert not result.success, 'Expected command to not exit successfully'
         assert result.run_time != 0.0
 
-    def test_run_outputs_to_stdout(self):
-        executioner = Executioner(stdout=StringIO())
+    def test_it_accepts_an_outputter(self):
+        Executioner(outputter=Outputter())
 
-        result = executioner.run(Path('/tmp'), 'echo hello')
+    def test_run_outputs_through_outputter(self):
+        outputter = Mock()
+        executioner = Executioner(outputter=outputter)
 
-        assert result.success, 'Expected command to exit successfully'
-        assert executioner.stdout.getvalue() == 'hello\n'
+        executioner.run(Path('/tmp'), 'echo hello')
+
+        outputter.info.write.assert_called_once_with('hello\n')
+
+    def test_run_stderr_outputs_through_outputter(self):
+        outputter = Mock()
+        executioner = Executioner(outputter=outputter)
+
+        executioner.run(Path('/tmp'), 'echoz hello')
+
+        outputter.error.write.assert_called_once_with('/bin/sh: echoz: command not found\n')

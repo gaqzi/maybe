@@ -4,3 +4,4 @@ docopts
 subprocess32
 six
 path.py
+mock

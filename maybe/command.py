@@ -2,12 +2,10 @@ from __future__ import unicode_literals
 
 
 class CommandResult(object):
-    def __init__(self, exit_code, run_time, path, output='', stderr=''):
+    def __init__(self, exit_code, run_time, path):
         self.exit_code = exit_code
         self.run_time = run_time
         self.path = path
-        self.output = output
-        self.stderr = stderr
 
     @property
     def success(self):

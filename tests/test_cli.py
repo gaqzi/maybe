@@ -1,7 +1,7 @@
 import maybe
 from maybe import Path
 from maybe.cli import CLI
-from maybe.executioners import NullExecutioner, Executioner
+from maybe.executioners import NullExecutioner
 
 
 class TestCli(object):
@@ -37,27 +37,3 @@ class TestCli(object):
         cli.run('test', cli.changed_projects())
 
         assert cli.successful
-
-    def test_returns_the_correct_output_for_the_command_run(self):
-        cli = CLI(
-            base_path='tests/support/dummy/',
-            config=self.config,
-            executioner=Executioner(
-                stdout=MockWriter(),
-                stderr=MockWriter(),
-                base_path='tests/support/dummy/'
-            )
-        )
-
-        results = cli.run('test', cli.changed_projects(
-            from_commit=self.FIRST_GREEN_COMMIT,
-            to_commit=self.FIRST_GREEN_COMMIT_PY
-        ))
-
-        assert results
-        assert 'tests/test_truth.py .' in results._results[0].output
-
-
-class MockWriter(object):
-    def write(self, *args):
-        pass
