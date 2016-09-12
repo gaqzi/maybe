@@ -1,17 +1,22 @@
+import pytest
+
 from maybe import Command, CommandResults, CommandResult, Path
 from maybe.executioners import NullExecutioner
 
 
-class TestCommand(object):
-    def test_run_command(self):
-        command = Command(
-            name='test',
-            mapping={
-                'extensions/cool-extension/': 'python setup.py test',
-                'extensions/warm-extension/': 'npm test',
-            }
-        )
+@pytest.fixture
+def command():
+    return Command(
+        name='test',
+        mapping={
+            'default': 'python setup.py test',
+            'extensions/warm-extension/': 'npm test',
+        }
+    )
 
+
+class TestCommand(object):
+    def test_run_command(self, command):
         result = command.run(
             paths=[Path('extensions/cool-extension/')],
             executioner=NullExecutioner(exit_code=0, run_time=0.01, output='.... OK')
@@ -49,6 +54,22 @@ class TestCommand(object):
         assert {Command(name='test',
                         mapping=dict(a='npm test'))} == {Command(name='test',
                                                                  mapping=dict(a='npm test'))}
+
+    def test_items_returns_a_list_of_path_cmd_strings(self, command):
+        assert command.items() == [
+            ('default', 'python setup.py test'),
+            ('extensions/warm-extension/', 'npm test'),
+        ]
+
+    def test_items_takes_a_list_of_paths_to_only_return_commands_for(self, command):
+        assert command.items(filter=['extensions/warm-extension/']) == [
+            ('extensions/warm-extension/', 'npm test'),
+        ]
+
+    def test_items_returned_takes_default_command_into_consideration(self, command):
+        assert command.items(filter=['something/else/']) == [
+            ('something/else/', 'python setup.py test'),
+        ]
 
 
 class TestCommandResults(object):

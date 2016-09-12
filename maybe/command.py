@@ -100,6 +100,12 @@ class Command(object):
 
         return result
 
+    def items(self, filter=None):
+        if filter:
+            return [(path, self._get_command(path)) for path in filter]
+        else:
+            return self.mapping.items()
+
     def _get_command(self, path):
         return self.mapping.get(str(path)) or self._default_command()
 
