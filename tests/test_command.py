@@ -41,10 +41,14 @@ class TestCommand(object):
         assert executioner.command is None
 
     def test_commands_are_equal_if_the_values_are_equal(self):
-        assert Command(name='test', mapping=dict(a='npm test')) == Command(name='test', mapping=dict(a='npm test'))
+        assert Command(name='test',
+                       mapping=dict(a='npm test')) == Command(name='test',
+                                                              mapping=dict(a='npm test'))
 
     def test_commands_should_be_comparable_in_sets(self):
-        assert {Command(name='test', mapping=dict(a='npm test'))} == {Command(name='test', mapping=dict(a='npm test'))}
+        assert {Command(name='test',
+                        mapping=dict(a='npm test'))} == {Command(name='test',
+                                                                 mapping=dict(a='npm test'))}
 
 
 class TestCommandResults(object):
