@@ -16,7 +16,7 @@ def match(lines, paths):
     """
 
     Args:
-        lines (list[str]): the files that has changed between the two commits
+        lines (list[Union[str, unicode]]): the files that has changed between the two commits
         paths: (list[Path]): the configured paths we support
 
     Returns:

@@ -73,7 +73,7 @@ class Command(object):
         """
 
         Args:
-            name (str): The name of this command
+            name (Union[str, unicode]): The name of this command
             mapping (Dict[maybe.Path, Command]): What commands to run at what paths.
                 The key ``default`` is used when no match is found.
         """
