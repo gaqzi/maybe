@@ -78,23 +78,25 @@ class Command(object):
         self.name = name
         self.mapping = mapping
 
-    def run(self, paths, executioner=None):
+    def run(self, paths, executioner=None, outputter=None):
         """
 
         Args:
             paths (list[Path]): A list of paths to run this command against
-            executioner (maybe.Executioner): The executioner to run this command through
+            executioner (maybe.BaseExecutioner): The executioner to run this command through
 
         Returns:
             CommandResults: The result of running this command
         """
         result = CommandResults()
-        executioner = executioner or self.executioner
         for path in paths:
-            print('Running tests for {0}:'.format(path))
+            if outputter:
+                outputter.info.write('Running {0} for {1}:'.format(self.name, path))
+
             result.add(executioner.run(path, self._get_command(path)))
 
-            print('')
+            if outputter:
+                outputter.info.write('\n')
 
         return result
 

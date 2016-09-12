@@ -43,10 +43,11 @@ class TestNullExecutioner(BaseTestExecutioner):
         assert executioner.run(Path('/m000'), 'true') == CommandResult(0, 1, Path('/m000'))
 
     def test_run_writes_output_to_output_stream(self):
-        executioner = NullExecutioner(0, output='Hello!')
+        outputter = Mock()
+        executioner = NullExecutioner(0, output='Hello!', outputter=outputter)
         executioner.run(Path('/m000'), 'true')
 
-        assert executioner.stdout.getvalue() == 'Hello!'
+        outputter.info.write.assert_called_once_with('Hello!')
 
 
 class TestExecutioner(BaseTestExecutioner):

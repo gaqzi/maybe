@@ -30,14 +30,13 @@ class BaseExecutioner(object):
 
 
 class NullExecutioner(BaseExecutioner):
-    def __init__(self, exit_code, run_time=0, output='', stdout=None, stderr=None, base_path='.'):
+    def __init__(self, exit_code, run_time=0, output='', base_path='.', outputter=None):
         self.exit_code = exit_code
         self.run_time = run_time
         self.output = output
         self.base_path = base_path
 
-        self.stdout = stdout or StringIO()
-        self.stderr = stderr or StringIO()
+        self.outputter = outputter or Outputter(StringIO(), StringIO())
 
         self.command = None
 
@@ -46,7 +45,7 @@ class NullExecutioner(BaseExecutioner):
         if command is None:
             return self._null_response()
 
-        self.stdout.write(six.text_type(self.output))
+        self.outputter.info.write(six.text_type(self.output))
         return CommandResult(self.exit_code, self.run_time, path)
 
 
