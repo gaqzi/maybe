@@ -2,9 +2,10 @@ from __future__ import unicode_literals
 
 from io import StringIO
 
+from path import path
+
 import maybe
 from maybe import Path
-from path import path
 
 
 class TestMatch(object):
