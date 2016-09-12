@@ -62,6 +62,14 @@ class TestCli(object):
         assert len(results.paths) == 3
         assert results.paths == paths
 
+    def test_returns_empty_result_when_theres_no_matched_paths(self, cli):
+
+        results = cli.run('test', ['error/'])
+
+        assert cli.successful
+        assert results.paths == []
+        assert results.run_time == 0.0
+
     def test_executing_command_outputs_info_about_what_is_running_and_where(self, cli):
         cli.run('test', ['extensions/rules/'])
 

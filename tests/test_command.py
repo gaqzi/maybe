@@ -17,35 +17,6 @@ def command():
 
 
 class TestCommand(object):
-    def test_run_command(self, command):
-        result = command.run(
-            paths=[Path('extensions/cool-extension/')],
-            executioner=NullExecutioner(exit_code=0, run_time=0.01, output='.... OK')
-        )
-
-        assert result.success
-        assert result.run_time == 0.01
-        assert result.paths == [Path('extensions/cool-extension/')]
-
-    def test_run_command_with_default_path(self):
-        command = Command(name='test', mapping=dict(default='python setup.py test'))
-        executioner = NullExecutioner(exit_code=0, run_time=0.01, output='.... OK')
-
-        command.run(paths=[Path('extensions/cool-extension/')], executioner=executioner)
-
-        assert executioner.command == 'python setup.py test'
-
-    def test_command_isnt_affect_when_no_path_matches(self):
-        command = Command(name='test', mapping=dict(a='python setup.py test'))
-        executioner = NullExecutioner(exit_code=0, run_time=0.01, output='.... OK')
-
-        result = command.run(paths=[Path('extensions/cool-extension/')], executioner=executioner)
-
-        assert result
-        assert result.run_time == 0.0
-        assert result.paths == []
-        assert executioner.command is None
-
     def test_commands_are_equal_if_the_values_are_equal(self):
         assert Command(name='test',
                        mapping=dict(a='npm test')) == Command(name='test',

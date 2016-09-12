@@ -80,28 +80,6 @@ class Command(object):
         self.name = name
         self.mapping = mapping
 
-    def run(self, paths, executioner=None, outputter=None):
-        """
-
-        Args:
-            paths (list[Path]): A list of paths to run this command against
-            executioner (maybe.BaseExecutioner): The executioner to run this command through
-
-        Returns:
-            CommandResults: The result of running this command
-        """
-        result = CommandResults()
-        for path in paths:
-            if outputter:
-                outputter.info.write('Running {0} for {1}:'.format(self.name, path))
-
-            result.add(executioner.run(path, self._get_command(path)))
-
-            if outputter:
-                outputter.info.write('\n')
-
-        return result
-
     def items(self, filter=None):
         if filter:
             return [(path, self._get_command(path)) for path in filter]
