@@ -46,20 +46,3 @@ class CLI(object):
             ),
             self.config['paths']
         )
-
-    def _matched_paths(self, paths):
-        return set(self.config['paths']) if not paths else match(paths, self.config['paths'])
-
-    def _command_for(self, path, command):
-        # type: (Union[Path, str], str) -> Command
-        for cmd in filter(lambda x: x.name == command, self.config['commands']):
-            if str(path) in cmd.mapping:
-                return cmd
-
-        raise KeyError('No command "{0}" found for path "{1}"'.format(command, path))
-
-    def _default_command(self):
-        return self.config['commands'].get('default')
-
-    def _join_base_dir_to_paths(self, paths):
-        return map(lambda p: os.path.join(self.base_dir, p), paths)
