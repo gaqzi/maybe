@@ -1,7 +1,43 @@
+from io import StringIO
+
+import pytest
+
 import maybe
 from maybe import Path
 from maybe.cli import CLI
 from maybe.executioners import NullExecutioner
+from maybe.outputter import Outputter
+
+
+@pytest.fixture
+def outputter():
+    return Outputter(StringIO(), StringIO())
+
+
+@pytest.fixture
+def config():
+    return dict(
+        paths=[Path('extensions/rules/'), Path('js/frontend/'), Path('js/mobile/')],
+        commands={maybe.Command('test', {
+            'extensions/rules/': 'py.test',
+            'js/*/': 'npm test'
+        })}
+    )
+
+
+@pytest.fixture
+def executioner(outputter):
+    return NullExecutioner(0, outputter=outputter)
+
+
+@pytest.fixture
+def cli(config, outputter, executioner):
+    return CLI(
+        base_path='tests/support/dummy/',
+        config=config,
+        executioner=executioner,
+        outputter=outputter,
+    )
 
 
 class TestCli(object):
@@ -37,3 +73,9 @@ class TestCli(object):
         cli.run('test', cli.changed_projects())
 
         assert cli.successful
+
+    def test_executing_command_outputs_info_about_what_is_running_and_where(self, cli):
+        cli.run('test', ['extensions/rules/'])
+
+        out = cli.outputter.info.streams[0].getvalue()
+        assert out == 'Running test for extensions/rules/:\n\n'
