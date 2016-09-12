@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+from fnmatch import fnmatch
+
 
 class CommandResult(object):
     def __init__(self, exit_code, run_time, path):
@@ -107,7 +109,9 @@ class Command(object):
             return self.mapping.items()
 
     def _get_command(self, path):
-        return self.mapping.get(str(path)) or self._default_command()
+        return (self.mapping.get(str(path)) or
+                self._glob_command(path) or
+                self._default_command())
 
     def _default_command(self):
         return self.mapping.get('default')
@@ -117,3 +121,8 @@ class Command(object):
 
     def __hash__(self):
         return hash(frozenset(self.__dict__))
+
+    def _glob_command(self, actual_path):
+        for command_path, command in self.mapping.items():
+            if fnmatch(str(actual_path), command_path):
+                return command

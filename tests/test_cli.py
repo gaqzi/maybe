@@ -56,9 +56,11 @@ class TestCli(object):
     def test_will_run_the_passed_in_command_for_all_configured_folders(self, cli):
         paths = list(cli.changed_projects())
 
-        cli.run('test', paths)
+        results = cli.run('test', paths)
 
         assert cli.successful
+        assert len(results.paths) == 3
+        assert results.paths == paths
 
     def test_executing_command_outputs_info_about_what_is_running_and_where(self, cli):
         cli.run('test', ['extensions/rules/'])

@@ -11,6 +11,7 @@ def command():
         mapping={
             'default': 'python setup.py test',
             'extensions/warm-extension/': 'npm test',
+            'ruby/*/': 'bundle exec rspec',
         }
     )
 
@@ -58,6 +59,7 @@ class TestCommand(object):
     def test_items_returns_a_list_of_path_cmd_strings(self, command):
         assert command.items() == [
             ('default', 'python setup.py test'),
+            ('ruby/*/', 'bundle exec rspec'),
             ('extensions/warm-extension/', 'npm test'),
         ]
 
@@ -69,6 +71,11 @@ class TestCommand(object):
     def test_items_returned_takes_default_command_into_consideration(self, command):
         assert command.items(filter=['something/else/']) == [
             ('something/else/', 'python setup.py test'),
+        ]
+
+    def test_items_will_match_against_globs(self, command):
+        assert command.items(filter=['ruby/mobile/']) == [
+            ('ruby/mobile/', 'bundle exec rspec')
         ]
 
 
