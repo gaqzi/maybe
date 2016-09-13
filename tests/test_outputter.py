@@ -5,17 +5,7 @@ from io import StringIO
 
 import pytest
 
-from maybe.outputter import Outputter, OutputStream
-
-
-@pytest.fixture()
-def outputter():
-    return Outputter()
-
-
-@pytest.fixture
-def stream():
-    return OutputStream()
+from maybe.outputter import OutputStream
 
 
 class TestOutputter(object):

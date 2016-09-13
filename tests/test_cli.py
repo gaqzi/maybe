@@ -1,46 +1,5 @@
 from __future__ import unicode_literals
 
-from io import StringIO
-
-import pytest
-
-import maybe
-from maybe import Path
-from maybe.cli import CLI
-from maybe.executioners import NullExecutioner
-from maybe.outputter import Outputter
-
-
-@pytest.fixture
-def outputter():
-    return Outputter(StringIO(), StringIO())
-
-
-@pytest.fixture
-def config():
-    return dict(
-        paths=[Path('extensions/rules/'), Path('js/frontend/'), Path('js/mobile/')],
-        commands={maybe.Command('test', {
-            'extensions/rules/': 'py.test',
-            'js/*/': 'npm test'
-        })}
-    )
-
-
-@pytest.fixture
-def executioner(outputter):
-    return NullExecutioner(0, outputter=outputter)
-
-
-@pytest.fixture
-def cli(config, outputter, executioner):
-    return CLI(
-        base_path='tests/support/dummy/',
-        config=config,
-        executioner=executioner,
-        outputter=outputter,
-    )
-
 
 class TestCli(object):
     FIRST_GREEN_COMMIT = '10aac02e05'

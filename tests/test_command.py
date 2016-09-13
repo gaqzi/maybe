@@ -1,21 +1,6 @@
 from __future__ import unicode_literals
 
-import pytest
-
-from maybe import Command, CommandResults, CommandResult, Path
-from maybe.executioners import NullExecutioner
-
-
-@pytest.fixture
-def command():
-    return Command(
-        name='test',
-        mapping={
-            'default': 'python setup.py test',
-            'extensions/warm-extension/': 'npm test',
-            'ruby/*/': 'bundle exec rspec',
-        }
-    )
+from maybe import Command, CommandResults, CommandResult
 
 
 class TestCommand(object):
