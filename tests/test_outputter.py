@@ -9,21 +9,19 @@ from maybe.outputter import OutputStream
 
 
 class TestOutputter(object):
-    def test_by_default_can_write_to_stdout(self, outputter, capfd):
+    def test_by_default_can_write_to_stdout(self, outputter):
         outputter.info.write('Hello')
 
-        out, err = capfd.readouterr()
+        out = outputter.info.streams[0].getvalue()
         assert out == 'Hello'
-        assert err == ''
 
-    def test_by_default_can_write_to_stderr(self, outputter, capfd):
+    def test_by_default_can_write_to_stderr(self, outputter):
         outputter.error.write('There')
 
-        out, err = capfd.readouterr()
-        assert out == ''
+        err = outputter.error.streams[0].getvalue()
         assert err == 'There'
 
-    def test_can_add_extra_output_streams(self, outputter, capfd):
+    def test_can_add_extra_output_streams(self, outputter):
         stdout = StringIO()
         stderr = StringIO()
         outputter.info.add(stdout)
@@ -32,7 +30,8 @@ class TestOutputter(object):
         outputter.info.write('Hello')
         outputter.error.write('There')
 
-        out, err = capfd.readouterr()
+        out = outputter.info.streams[0].getvalue()
+        err = outputter.error.streams[0].getvalue()
         assert out == 'Hello'
         assert stdout.getvalue() == 'Hello'
         assert err == 'There'
