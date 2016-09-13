@@ -6,7 +6,6 @@ from io import StringIO
 
 import six
 
-from maybe.command import CommandResult
 from maybe.outputter import Outputter
 from maybe.utils import timer
 
@@ -18,7 +17,7 @@ class BaseExecutioner(object):
         raise NotImplementedError('run is not implemented')
 
     def _null_response(self):
-        return CommandResult.none()
+        return ExecutionResult.none()
 
     @property
     def base_path(self):
@@ -46,7 +45,7 @@ class NullExecutioner(BaseExecutioner):
             return self._null_response()
 
         self.outputter.info.write(six.text_type(self.output))
-        return CommandResult(self.exit_code, self.run_time, path)
+        return ExecutionResult(self.exit_code, self.run_time, path)
 
 
 class Executioner(BaseExecutioner):
@@ -63,7 +62,7 @@ class Executioner(BaseExecutioner):
 
         process, run_time = timer(lambda: self._run(command, path))
 
-        return CommandResult(
+        return ExecutionResult(
             exit_code=process.returncode,
             run_time=run_time.total_seconds(),
             path=path,
@@ -99,3 +98,69 @@ class Executioner(BaseExecutioner):
             path = os.path.abspath(os.path.join(self.base_path, path))
 
         return path
+
+
+class ExecutionResult(object):
+    def __init__(self, exit_code, run_time, path):
+        self.exit_code = exit_code
+        self.run_time = run_time
+        self.path = path
+
+    @property
+    def success(self):
+        return True if self.exit_code == 0 else False
+
+    def __bool__(self):
+        return self.success
+
+    def __nonzero__(self):
+        return self.__bool__()
+
+    def __eq__(self, other):
+        return self.__dict__ == other.__dict__
+
+    @classmethod
+    def none(cls):
+        """Returns a null object version of :class:`CommandResult`
+
+        Returns:
+            ExecutionResult: with all values set to 0 or None
+        """
+        return cls(0, 0, None)
+
+
+class ExecutionResults(object):
+    def __init__(self):
+        self._results = []
+
+    def add(self, result):
+        """
+
+        Args:
+            result (ExecutionResult): The results of running a command for a given path
+        """
+        self._results.append(result)
+
+    @property
+    def success(self):
+        if self._results:
+            return all(self._results)
+        else:
+            return False
+
+    @property
+    def run_time(self):
+        return sum(map(lambda x: x.run_time, self._results), 0.0)
+
+    @property
+    def paths(self):
+        return [x.path for x in self._results if x.path is not None]
+
+    def __bool__(self):
+        return self.success
+
+    def __nonzero__(self):
+        return self.__bool__()
+
+    def __getitem__(self, item):
+        return self._results[item]

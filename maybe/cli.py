@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 import os
 
-from maybe import CommandResults
+from maybe.executioners import ExecutionResults
 from maybe import differs, executioners
 from maybe import match
 from maybe.outputter import Outputter
@@ -21,7 +21,7 @@ class CLI(object):
 
     def run(self, command_name, paths):
         command = next((c for c in self.config['commands'] if c.name == command_name), None)
-        self.results = CommandResults()
+        self.results = ExecutionResults()
 
         for path, cmd in command.items(filter=paths):
             if cmd is None:
