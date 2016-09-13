@@ -6,3 +6,6 @@ commands:
   tests:
     default: py.test --color=yes
     js/mobile/: npm test --color=always
+  setup:
+    default: pip install pytest
+    js/mobile/: npm install --color=always
