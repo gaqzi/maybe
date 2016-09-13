@@ -40,7 +40,7 @@ class CommandResults(object):
         """
 
         Args:
-            result (CommandResult): The result of running a command for a given path
+            result (CommandResult): The results of running a command for a given path
         """
         self._results.append(result)
 
@@ -64,6 +64,9 @@ class CommandResults(object):
 
     def __nonzero__(self):
         return self.__bool__()
+
+    def __getitem__(self, item):
+        return self._results[item]
 
 
 class Command(object):

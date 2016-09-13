@@ -86,6 +86,14 @@ class TestCommandResults(object):
 
         assert result.paths == ['/m000', '/meep']
 
+    def test_when_iterated_returns_the_results(self):
+        result = CommandResults()
+        result.add(CommandResult.none())
+
+        results = map(lambda x: x, result)
+
+        assert results == result._results
+
 
 class TestCommandResult(object):
     def test_exit_code_0_is_success(self):

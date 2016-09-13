@@ -48,12 +48,19 @@ if __name__ == '__main__':
             print('\t{0}'.format(project))
         print()
 
-        result = cli.run(
+        results = cli.run(
             command_name=arguments['<command>'],
             paths=changed_projects,
         )
 
-        exit(0 if result else 1)
+        for result in results:
+            print('{}: {} ({})'.format(result.path,
+                                       'Success' if result.success else 'Failure',
+                                       result.run_time))
+        print()
+        print('Commands finished in {}'.format(results.run_time))
+
+        exit(0 if results else 1)
     else:
         print('I have no idea how we ended up here', file=sys.stderr)
         print(__doc__)
