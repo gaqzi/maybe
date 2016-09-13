@@ -4,5 +4,5 @@ paths:
   - js/mobile/
 commands:
   tests:
-    default: py.test
-    js/mobile/: npm test
+    default: py.test --color=yes
+    js/mobile/: npm test --color=always
