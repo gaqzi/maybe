@@ -3,7 +3,6 @@
 
 Usage:
   maybe command <command> [--from=<from_commit> [--to=<to_commit>]]
-  maybe diff [--from=<from_commit> [--to=<to_commit>]]
   maybe (-h | --help)
   maybe --version
 
