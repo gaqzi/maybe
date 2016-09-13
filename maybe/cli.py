@@ -24,6 +24,9 @@ class CLI(object):
         self.results = CommandResults()
 
         for path, cmd in command.items(filter=paths):
+            if cmd is None:
+                continue
+
             self.outputter.info.write('Running {0} for {1}:\n'.format(command_name, path))
 
             self.results.add(self.executioner.run(path, cmd))
