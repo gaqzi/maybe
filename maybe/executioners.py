@@ -89,8 +89,8 @@ class Executioner(BaseExecutioner):
 
         while process.returncode is None:
             stdout, stderr = process.communicate()
-            self.outputter.info.write(six.text_type(stdout))
-            self.outputter.error.write(six.text_type(stderr))
+            self.outputter.info.write(six.text_type(stdout.decode('utf-8')))
+            self.outputter.error.write(six.text_type(stderr.decode('utf-8')))
 
         return process
 

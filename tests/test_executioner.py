@@ -1,3 +1,4 @@
+# coding=utf-8
 from __future__ import unicode_literals
 
 import os
@@ -91,3 +92,11 @@ class TestExecutioner(BaseTestExecutioner):
         executioner.run(Path('/tmp'), 'echoz hello')
 
         outputter.error.write.assert_called_once_with('/bin/sh: echoz: command not found\n')
+
+    def test_decode_output_to_utf8_before_writing(self):
+        outputter = Mock()
+        executioner = Executioner(outputter=outputter)
+
+        executioner.run(Path('/tmp'), 'echo Björn')
+
+        outputter.info.write.assert_called_once_with('Björn\n')
