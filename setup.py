@@ -50,8 +50,7 @@ def try_to_convert_to_rst(text):
     except ImportError:
         return text
 
-    pypandoc.convert_text(text, 'rst', format='md')
-
+    return pypandoc.convert_text(text, 'rst', format='md')
 
 README = try_to_convert_to_rst(open(os.path.join(os.path.dirname(__file__), 'README.md')).read())
 
