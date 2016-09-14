@@ -1,6 +1,10 @@
 radish
 ======
 
+[![CircleCI](https://circleci.com/gh/gaqzi/radish.svg?style=shield)](https://circleci.com/gh/gaqzi/radish)
+[![Latest Version](https://img.shields.io/pypi/v/gocd-cli.svg)](https://pypi.python.org/pypi/radish-run/)
+[![Python versions](https://img.shields.io/pypi/pyversions/gocd-cli.svg)](https://pypi.python.org/pypi/radish-run/)
+
 A task runner that understands version control.
 
 # How to use
