@@ -11,7 +11,7 @@ A task runner that understands version control.
 
 An example invocation of radish:
 
-```
+```shell
 $ radish command tests --from 19abc023 --to 2514ecb1
 Changed paths:
   - extensions/cool-extension/
