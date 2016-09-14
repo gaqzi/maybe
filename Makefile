@@ -14,10 +14,15 @@ develop:
 	@echo "Added pre-commit hook! To run manually: make pre-commit"
 	@echo "Added pre-push hook! To run manually: make pre-push"
 
-clean:
+clean-build:
+	rm -fr build/
+	rm -fr dist/
+	rm -fr *.egg-info
+
+clean: clean-build
 	find . -name '.cache' | xargs rm -rf
 	find . -name '*.pyc' | xargs rm -rf
-	rm -rf .tox
+	rm -rf .tox .eggs
 
 test:
 	tox
