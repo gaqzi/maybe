@@ -4,11 +4,11 @@ from io import StringIO
 
 import pytest
 
-from maybe import Command
-from maybe import Path
-from maybe.cli import CLI
-from maybe.executioners import NullExecutioner
-from maybe.outputter import Outputter, OutputStream
+from radish import Command
+from radish import Path
+from radish.cli import CLI
+from radish.executioners import NullExecutioner
+from radish.outputter import Outputter, OutputStream
 
 
 @pytest.fixture

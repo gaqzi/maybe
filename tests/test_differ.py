@@ -4,8 +4,8 @@ import os
 
 import pytest
 
-from maybe.differs import Git
-from maybe.differs import subprocess
+from radish.differs import Git
+from radish.differs import subprocess
 
 
 class TestGit(object):

@@ -5,9 +5,9 @@ import itertools
 
 import six
 import yaml
-from maybe.command import Command
-from maybe.executioners import Executioner, ExecutionResult, ExecutionResults
-from maybe.path import Path
+from radish.command import Command
+from radish.executioners import Executioner, ExecutionResult, ExecutionResults
+from radish.path import Path
 
 __version__ = '0.1.0'
 

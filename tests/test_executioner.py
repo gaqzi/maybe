@@ -3,10 +3,10 @@ from __future__ import unicode_literals
 
 import os
 
-from maybe import ExecutionResult, Executioner, ExecutionResults
-from maybe import Path
-from maybe.executioners import NullExecutioner, ExecutionResult
-from maybe.outputter import Outputter
+from radish import ExecutionResult, Executioner, ExecutionResults
+from radish import Path
+from radish.executioners import NullExecutioner, ExecutionResult
+from radish.outputter import Outputter
 
 try:
     from unittest.mock import Mock

@@ -5,7 +5,7 @@ from io import StringIO
 
 import pytest
 
-from maybe.outputter import OutputStream
+from radish.outputter import OutputStream
 
 
 class TestOutputter(object):

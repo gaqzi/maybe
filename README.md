@@ -1,19 +1,14 @@
-maybe
-=====
+radish
+======
 
-A tool to maybe run commands if something has changed.
-
-**Note:** This isn't working yet. Practicing 
-[Readme Driven Development][rdd] here. :)
-
-[rdd]: http://tom.preston-werner.com/2010/08/23/readme-driven-development.html
+A task runner that understands version control.
 
 # How to use
 
-An example invocation of maybe:
+An example invocation of radish:
 
 ```
-$ maybe command tests --from 19abc023 --to 2514ecb1
+$ radish command tests --from 19abc023 --to 2514ecb1
 Changed paths:
   - extensions/cool-extension/
   - frontend/js/
@@ -31,7 +26,7 @@ All commands ended successfully and ran in 9.75s.
 
 # Configuration
 
-maybe configuration is a yaml file named `Maybefile`, because I can.
+radish configuration is a yaml file named `Radishfile`, because I can.
 
 ```yaml
 paths:

@@ -28,19 +28,19 @@ class PyTest(TestCommand):
 
 
 def version():
-    import maybe
-    return maybe.__version__
+    import radish
+    return radish.__version__
 
 
 README = open(os.path.join(os.path.dirname(__file__), 'README.md')).read()
 
 setup(
-    name='maybe',
+    name='radish',
     author='Björn Andersson',
     author_email='ba@sanitarium.se',
-    license='MIT License',
-    url='https://github.com/gaqzi/maybe/',
-    description='A conditionally conditional command runner',
+    license='Beerware license',
+    url='https://github.com/gaqzi/radish/',
+    description='A task runner that understands version control',
     long_description=README,
     version=version(),
     packages=find_packages(exclude=('tests',)),
@@ -63,7 +63,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'maybe = maybe.cli:main'
+            'radish = radish.cli:main'
         ]
     }
 )

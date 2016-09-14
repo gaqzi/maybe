@@ -11,7 +11,7 @@ class Command(object):
 
         Args:
             name (Union[str, unicode]): The name of this command
-            mapping (Dict[maybe.Path, Command]): What commands to run at what paths.
+            mapping (Dict[radish.Path, Command]): What commands to run at what paths.
                 The key ``default`` is used when no match is found.
         """
         self.name = name

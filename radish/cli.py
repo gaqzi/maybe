@@ -5,11 +5,11 @@ import sys
 
 from docopt import docopt
 
-import maybe
-from maybe import differs, executioners
-from maybe import match
-from maybe.executioners import ExecutionResults
-from maybe.outputter import Outputter
+import radish
+from radish import differs, executioners
+from radish import match
+from radish.executioners import ExecutionResults
+from radish.outputter import Outputter
 
 
 class CLI(object):
@@ -57,16 +57,16 @@ def get_config_file(*filenames):
         if os.path.exists(filename):
             return os.path.abspath(filename)
 
-    raise Exception('No "Maybefile" available')
+    raise Exception('No "Radishfile" available')
 
 
 def main():
-    """Maybe run a command if something has changed in a folder
+    """radish a task runner that understands version control
 
     Usage:
-      maybe command <command> [--from=<from_commit> [--to=<to_commit>]]
-      maybe (-h | --help)
-      maybe --version
+      radish command <command> [--from=<from_commit> [--to=<to_commit>]]
+      radish (-h | --help)
+      radish --version
 
     Options:
       --from=<from_commit>  The commit or reference to compare from
@@ -74,9 +74,9 @@ def main():
       -h --help             Show this screen
       --version             Show version
     """
-    arguments = docopt(main.__doc__, version='maybe {0}'.format(maybe.__version__))
+    arguments = docopt(main.__doc__, version='radish {0}'.format(radish.__version__))
 
-    cli = CLI(config=maybe.read_config(get_config_file('Maybefile', 'Maybefile.yml')))
+    cli = CLI(config=radish.read_config(get_config_file('Radishfile', 'Radishfile.yml')))
 
     if arguments['command'] or arguments['cmd']:
         changed_projects = cli.changed_projects(

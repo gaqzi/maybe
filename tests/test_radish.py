@@ -4,8 +4,8 @@ from io import StringIO
 
 from path import path
 
-import maybe
-from maybe import Path
+import radish
+from radish import Path
 
 
 class TestMatch(object):
@@ -13,7 +13,7 @@ class TestMatch(object):
         lines = ['test/m000.py']
         paths = [Path('extensions/cool-extension')]
 
-        assert maybe.match(lines, paths) == set()
+        assert radish.match(lines, paths) == set()
 
     def test_returns_unique_matched_paths(self):
         lines = [
@@ -22,7 +22,7 @@ class TestMatch(object):
         ]
         paths = [Path('extensions/cool-extension/')]
 
-        assert maybe.match(lines, paths) == {'extensions/cool-extension/'}
+        assert radish.match(lines, paths) == {'extensions/cool-extension/'}
 
     def test_returns_unique_matched_globbed_directories(self):
         lines = [
@@ -31,7 +31,7 @@ class TestMatch(object):
         ]
         paths = [Path('extensions/*/')]
 
-        assert maybe.match(lines, paths) == {
+        assert radish.match(lines, paths) == {
             'extensions/cool-extension/',
             'extensions/warm-extension/'
         }
@@ -46,14 +46,14 @@ class TestConfigParser(object):
             '  - frontend/js'
         ]))
 
-        assert maybe.read_config(conf_file) == {
+        assert radish.read_config(conf_file) == {
             'paths': [Path('extensions/'), Path('frontend/js')],
             'commands': set()
         }
 
     def test_expands_a_globbed_path(self):
         with path('tests/support/dummy/'):
-            assert maybe.read_config('Maybefile')['paths'] == [
+            assert radish.read_config('Radishfile')['paths'] == [
                 Path('extensions/roles_and_permissions/'),
                 Path('extensions/rules/'),
                 Path('js/mobile/')
@@ -71,10 +71,10 @@ class TestConfigParser(object):
             '    frontend/js: npm test'
         ]))
 
-        config = maybe.read_config(conf_file)
+        config = radish.read_config(conf_file)
 
         assert config['commands'] == {
-            maybe.Command('test', {
+            radish.Command('test', {
                 'default': 'python setup.py test',
                 'frontend/js': 'npm test'
             })
