@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 from __future__ import unicode_literals
+
 import os
 import sys
 
@@ -43,7 +44,16 @@ if sys.version_info < (3, 0):
     ]
 
 
-README = open(os.path.join(os.path.dirname(__file__), 'README.md')).read()
+def try_to_convert_to_rst(text):
+    try:
+        import pypandoc
+    except ImportError:
+        return text
+
+    pypandoc.convert_text(text, 'rst', format='md')
+
+
+README = try_to_convert_to_rst(open(os.path.join(os.path.dirname(__file__), 'README.md')).read())
 
 setup(
     name='radish-run',

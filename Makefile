@@ -31,3 +31,8 @@ lint:
 pre-commit: coverage lint
 
 pre-push: test
+
+upload-package: test lint clean
+	pip install twine wheel pypandoc
+	python setup.py sdist bdist_wheel
+	twine upload dist/*
