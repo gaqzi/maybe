@@ -64,6 +64,7 @@ setup(
     ] + extra_dependencies,
     tests_require=[
         'pytest',
+        'pytest-cov',
     ] + extra_test_dependencies,
     classifiers=[
         'Intended Audience :: Developers',

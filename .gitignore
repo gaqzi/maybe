@@ -2,4 +2,4 @@ build/
 .eggs/
 .tox/
 .python-version
-
+.coverage

@@ -15,3 +15,6 @@ clean:
 
 test:
 	py.test
+
+coverage:
+	py.test --cov=radish tests
