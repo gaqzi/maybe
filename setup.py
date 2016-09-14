@@ -46,7 +46,7 @@ if sys.version_info < (3, 0):
 README = open(os.path.join(os.path.dirname(__file__), 'README.md')).read()
 
 setup(
-    name='radish',
+    name='radish-run',
     author='Björn Andersson',
     author_email='ba@sanitarium.se',
     license='Beerware license',
