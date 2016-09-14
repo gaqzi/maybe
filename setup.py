@@ -32,6 +32,17 @@ def version():
     return radish.__version__
 
 
+extra_dependencies = []
+extra_test_dependencies = []
+if sys.version_info < (3, 0):
+    extra_dependencies = [
+        'subprocess32',
+    ]
+    extra_test_dependencies = [
+        'mock',
+    ]
+
+
 README = open(os.path.join(os.path.dirname(__file__), 'README.md')).read()
 
 setup(
@@ -45,9 +56,15 @@ setup(
     version=version(),
     packages=find_packages(exclude=('tests',)),
     cmdclass={'test': PyTest},
+    install_requires=[
+        'pyyaml',
+        'docopts',
+        'six',
+        'path.py',
+    ] + extra_dependencies,
     tests_require=[
         'pytest',
-    ],
+    ] + extra_test_dependencies,
     classifiers=[
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
