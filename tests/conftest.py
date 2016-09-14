@@ -22,6 +22,7 @@ def command():
         }
     )
 
+
 @pytest.fixture()
 def outputter():
     return Outputter(StringIO(), StringIO())
