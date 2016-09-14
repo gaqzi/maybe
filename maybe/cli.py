@@ -18,10 +18,10 @@ class CLI(object):
                                                                    outputter=outputter)
         self.config = config
         self.differ = differ or differs.Git(base_path)
+        self.results = ExecutionResults()
 
     def run(self, command_name, paths):
         command = next((c for c in self.config['commands'] if c.name == command_name), None)
-        self.results = ExecutionResults()
 
         for path, cmd in command.items(filter=paths):
             if cmd is None:
@@ -33,9 +33,6 @@ class CLI(object):
 
             self.outputter.info.write('\n')
 
-        return self.results
-
-    def successful(self):
         return self.results
 
     def changed_projects(self, from_commit=None, to_commit=None):
