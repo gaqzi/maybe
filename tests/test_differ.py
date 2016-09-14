@@ -16,20 +16,20 @@ class TestGit(object):
         return Git(base_path='tests/support/dummy/')
 
     def test_git_returns_changed_files_between_two_commits(self):
-        assert self._differ().changed_files_between(
+        assert list(self._differ().changed_files_between(
             self.FIRST_GREEN_COMMIT,
             self.FIRST_GREEN_COMMIT_PY
-        ) == ['extensions/roles_and_permissions/tests/test.py',
-              'extensions/roles_and_permissions/tests/test_truth.py',
-              'extensions/rules/tests/test.py',
-              'extensions/rules/tests/test_truth.py',
-              'js/.gitignore']
+        )) == [
+            'extensions/roles_and_permissions/tests/test.py',
+            'extensions/roles_and_permissions/tests/test_truth.py',
+            'extensions/rules/tests/test.py',
+            'extensions/rules/tests/test_truth.py',
+            'js/.gitignore'
+        ]
 
     def test_no_changes_returns_empty_list(self):
-        assert self._differ().changed_files_between(
-            self.FIRST_GREEN_COMMIT,
-            self.FIRST_GREEN_COMMIT
-        ) == []
+        assert list(self._differ().changed_files_between(self.FIRST_GREEN_COMMIT,
+                                                         self.FIRST_GREEN_COMMIT)) == []
 
     def test_invalid_commit_ref_raises_exception(self):
         with pytest.raises(subprocess.CalledProcessError):

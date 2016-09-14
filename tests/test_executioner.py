@@ -154,7 +154,7 @@ class TestExecutionResults(object):
         result = ExecutionResults()
         result.add(ExecutionResult.none())
 
-        results = map(lambda x: x, result)
+        results = list(map(lambda x: x, result))
 
         assert results == result._results
 

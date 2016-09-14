@@ -48,10 +48,9 @@ class TestOutputStream(object):
         stream.write('Hello')
 
     def test_raises_invalid_stream_for_streams_that_dont_implement_write(self, stream):
-        with pytest.raises(OutputStream.InvalidStream) as exc:
+        with pytest.raises(OutputStream.InvalidStream,
+                           message='"NoneType" does not have a "write" method'):
             stream.add(None)
-
-        assert exc.value.message == '"NoneType" does not have a "write" method'
 
     def test_can_write_to_streams(self, stream, capfd):
         output = StringIO()

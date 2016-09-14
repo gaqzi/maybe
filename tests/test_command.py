@@ -15,11 +15,11 @@ class TestCommand(object):
                                                                  mapping=dict(a='npm test'))}
 
     def test_items_returns_a_list_of_path_cmd_strings(self, command):
-        assert command.items() == [
+        assert sorted(command.items()) == sorted([
             ('default', 'python setup.py test'),
             ('ruby/*/', 'bundle exec rspec'),
             ('extensions/warm-extension/', 'npm test'),
-        ]
+        ])
 
     def test_items_takes_a_list_of_paths_to_only_return_commands_for(self, command):
         assert command.items(filter=['extensions/warm-extension/']) == [
