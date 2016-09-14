@@ -8,9 +8,9 @@ from radish.outputter import Outputter
 from radish.path import Path
 
 try:
-    from unittest.mock import Mock
+    from unittest.mock import Mock, ANY
 except ImportError:
-    from mock import Mock
+    from mock import Mock, ANY
 
 
 class BaseTestExecutioner(object):
@@ -90,7 +90,8 @@ class TestExecutioner(BaseTestExecutioner):
 
         executioner.run(Path('/tmp'), 'echoz hello')
 
-        outputter.error.write.assert_called_once_with('/bin/sh: echoz: command not found\n')
+        outputter.error.write.assert_called_once_with(ANY)
+        assert 'echoz' in outputter.error.write.call_args[0][0]
 
     def test_decode_output_to_utf8_before_writing(self):
         outputter = Mock()
