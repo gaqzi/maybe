@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-from radish import Path
+from radish.path import Path
 
 
 class TestPath(object):

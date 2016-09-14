@@ -1,13 +1,18 @@
 from __future__ import unicode_literals, print_function
 
+import glob
+import itertools
 import os
 import sys
 
+import six
+import yaml
 from docopt import docopt
 
 import radish
 from radish import differs, executioners
-from radish import match
+from radish.path import Path
+from radish.command import Command
 from radish.executioners import ExecutionResults
 from radish.outputter import Outputter
 
@@ -60,6 +65,55 @@ def get_config_file(*filenames):
     raise Exception('No "Radishfile" available')
 
 
+def match(lines, paths):
+    """
+
+    Args:
+        lines (list[Union[str, unicode]]): the files that has changed between the two commits
+        paths: (list[Path]): the configured paths we support
+
+    Returns:
+        set[Path]: The matched paths
+    """
+    matches = set()
+    for line in lines:
+        for path in paths:
+            matches.add(path.match(line))
+
+    return {x for x in matches if x}
+
+
+def read_config(conf_file):
+    """
+
+    Args:
+        conf_file (Union(TextIO, str)): A file pointer to read a config
+            file from or a path to a file
+
+    Returns:
+        dict: A configuration dictionary
+    """
+    if isinstance(conf_file, six.string_types):
+        with open(conf_file, 'r') as fh:
+            config = yaml.load(fh)
+    else:
+        config = yaml.load(conf_file)
+
+    def expand_glob(path):
+        if '*' in path:
+            return [p for p in glob.glob(path)]
+        else:
+            return [path]
+
+    paths = [expand_glob(path) for path in config['paths']]
+    config['paths'] = [Path(path) for path in itertools.chain(*paths)]
+
+    config['commands'] = {Command(name, mapping)
+                          for name, mapping in config.get('commands', {}).items()}
+
+    return config
+
+
 def main():
     """radish a task runner that understands version control
 
@@ -74,9 +128,9 @@ def main():
       -h --help             Show this screen
       --version             Show version
     """
-    arguments = docopt(main.__doc__, version='radish {0}'.format(radish.__version__))
+    arguments = docopt(six.text_type(main.__doc__), version='radish {0}'.format(radish.__version__))
 
-    cli = CLI(config=radish.read_config(get_config_file('Radishfile', 'Radishfile.yml')))
+    cli = CLI(config=read_config(get_config_file('Radishfile', 'Radishfile.yml')))
 
     if arguments['command'] or arguments['cmd']:
         changed_projects = cli.changed_projects(

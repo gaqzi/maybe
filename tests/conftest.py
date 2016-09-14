@@ -4,8 +4,8 @@ from io import StringIO
 
 import pytest
 
-from radish import Command
-from radish import Path
+from radish.command import Command
+from radish.path import Path
 from radish.cli import CLI
 from radish.executioners import NullExecutioner
 from radish.outputter import Outputter, OutputStream

@@ -3,10 +3,9 @@ from __future__ import unicode_literals
 
 import os
 
-from radish import ExecutionResult, Executioner, ExecutionResults
-from radish import Path
-from radish.executioners import NullExecutioner, ExecutionResult
+from radish.executioners import ExecutionResult, NullExecutioner, Executioner, ExecutionResults
 from radish.outputter import Outputter
+from radish.path import Path
 
 try:
     from unittest.mock import Mock

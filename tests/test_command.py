@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-from radish import Command
+from radish.command import Command
 
 
 class TestCommand(object):
