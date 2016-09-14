@@ -3,3 +3,4 @@ docopts
 six
 path.py
 pytest
+pytest-cov
