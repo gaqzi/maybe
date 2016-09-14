@@ -1,10 +1,14 @@
-from __future__ import unicode_literals
+from __future__ import unicode_literals, print_function
 
 import os
+import sys
 
-from maybe.executioners import ExecutionResults
+from docopt import docopt
+
+import maybe
 from maybe import differs, executioners
 from maybe import match
+from maybe.executioners import ExecutionResults
 from maybe.outputter import Outputter
 
 
@@ -46,3 +50,59 @@ class CLI(object):
             ),
             self.config['paths']
         )
+
+
+def get_config_file(*filenames):
+    for filename in filenames:
+        if os.path.exists(filename):
+            return os.path.abspath(filename)
+
+    raise Exception('No "Maybefile" available')
+
+
+def main():
+    """Maybe run a command if something has changed in a folder
+
+    Usage:
+      maybe command <command> [--from=<from_commit> [--to=<to_commit>]]
+      maybe (-h | --help)
+      maybe --version
+
+    Options:
+      --from=<from_commit>  The commit or reference to compare from
+      --to=<to_commit>      The commit or reference to compare to
+      -h --help             Show this screen
+      --version             Show version
+    """
+    arguments = docopt(main.__doc__, version='maybe {0}'.format(maybe.__version__))
+
+    cli = CLI(config=maybe.read_config(get_config_file('Maybefile', 'Maybefile.yml')))
+
+    if arguments['command'] or arguments['cmd']:
+        changed_projects = cli.changed_projects(
+            from_commit=arguments['--from'],
+            to_commit=arguments['--to'],
+        )
+
+        print('Changed paths:')
+        for project in changed_projects:
+            print('\t{0}'.format(project))
+        print()
+
+        results = cli.run(
+            command_name=arguments['<command>'],
+            paths=changed_projects,
+        )
+
+        for result in results:
+            print('{}: {} ({})'.format(result.path,
+                                       'Success' if result.success else 'Failure',
+                                       result.run_time))
+        print()
+        print('Commands finished in {}'.format(results.run_time))
+
+        exit(0 if results else 1)
+    else:
+        print('I have no idea how we ended up here', file=sys.stderr)
+        print(__doc__)
+        exit(1)
