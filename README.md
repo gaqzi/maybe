@@ -2,8 +2,8 @@ radish
 ======
 
 [![CircleCI](https://circleci.com/gh/gaqzi/radish.svg?style=shield)](https://circleci.com/gh/gaqzi/radish)
-[![Latest Version](https://img.shields.io/pypi/v/gocd-cli.svg)](https://pypi.python.org/pypi/radish-run/)
-[![Python versions](https://img.shields.io/pypi/pyversions/gocd-cli.svg)](https://pypi.python.org/pypi/radish-run/)
+[![Latest Version](https://img.shields.io/pypi/v/radish-run.svg)](https://pypi.python.org/pypi/radish-run/)
+[![Python versions](https://img.shields.io/pypi/pyversions/radish-run.svg)](https://pypi.python.org/pypi/radish-run/)
 
 Radish is a task runner that understands version control. 
 
