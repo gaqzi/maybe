@@ -4,8 +4,14 @@ import os
 
 import pytest
 
-from radish.differs import Git
-from radish.differs import subprocess
+from radish.differs import DifferBase, Git
+
+
+class TestDifferBase(object):
+    def test_set_base_path_to_non_absolute_makes_it_absolute_from_cwd(self):
+        assert DifferBase(
+            base_path='tests/support/dummy/'
+        ).base_path == os.path.join(os.getcwd(), 'tests/', 'support/', 'dummy')
 
 
 class TestGit(object):
@@ -32,13 +38,8 @@ class TestGit(object):
                                                          self.FIRST_GREEN_COMMIT)) == []
 
     def test_invalid_commit_ref_raises_exception(self):
-        with pytest.raises(subprocess.CalledProcessError) as exc:
+        message = "Failed to get list of changed files between 'INVALID_REF' and 'HEAD'"
+        with pytest.raises(Git.DiffError, message=message) as exc:
             self._differ().changed_files_between('INVALID_REF')
 
-        assert exc.value.cmd == 'git diff --name-only INVALID_REF'
-        assert 'STDERR' in exc.value.output
-
-    def test_set_base_path_to_non_absolute_makes_it_absolute_from_cwd(self):
-        assert Git(
-            base_path='tests/support/dummy/'
-        ).base_path == os.path.join(os.getcwd(), 'tests/', 'support/', 'dummy')
+        assert exc.value.original

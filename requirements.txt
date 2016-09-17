@@ -4,3 +4,4 @@ six
 path.py
 pytest
 pytest-cov
+gitpython

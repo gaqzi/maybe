@@ -70,6 +70,7 @@ setup(
         'docopts',
         'six',
         'path.py',
+        'gitpython'
     ] + extra_dependencies,
     tests_require=[
         'pytest',

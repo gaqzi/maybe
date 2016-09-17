@@ -1,29 +1,20 @@
 from __future__ import unicode_literals
 
-import logging
 import os
-import sys
-from io import StringIO
 
-import six
-
-if os.name == 'posix' and sys.version_info[0] < 3:
-    import subprocess32 as subprocess
-else:
-    import subprocess
-
-logger = logging.getLogger(__name__)
+import git
 
 
-class Git(object):
-    _command = 'git'
-    _base_path = None
+class DiffError(BaseException):
+    def __init__(self, message, original):
+        self.message = message
+        self.original = original
 
+
+class DifferBase(object):
     def __init__(self, base_path='.'):
+        self._base_path = None
         self.base_path = base_path
-
-    def changed_files_between(self, from_commit, to_commit=None):
-        return self._run(['diff', '--name-only', from_commit, to_commit])
 
     @property
     def base_path(self):
@@ -33,46 +24,44 @@ class Git(object):
     def base_path(self, value):
         self._base_path = os.path.abspath(value)
 
-    def _run(self, arguments):
-        command = [self._command]
-        command.extend(arguments)
-        command = list(filter(lambda x: x, command))  # Remove empty arguments
+    def changed_files_between(self, from_commit, to_commit=None):
+        raise NotImplementedError('changed_files_between is not implemented.')
 
-        output = StringIO()
-        stderr = StringIO()
 
-        process = subprocess.Popen(
-            ' '.join(command),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            cwd=str(self.base_path),
-            universal_newlines=True,
-            shell=True
-        )
+class Git(DifferBase):
+    DiffError = DiffError
+    _repo = None
 
-        while process.returncode is None:
-            out, err = process.communicate()
-            output.write(six.u(out))
-            stderr.write(six.u(err))
+    @property
+    def repo(self):
+        if not self._repo:
+            self._repo = git.Repo(self.base_path)
+        return self._repo
 
-        output.seek(0)
-        stderr.seek(0)
+    def changed_files_between(self, from_commit, to_commit=None):
+        """Returns a list of changed files between two commits.
 
-        if process.returncode == 0:
-            return filter(lambda x: x, output.read().strip().split('\n'))
-        else:
-            logger.warn('Command exited unsuccessfully', extra=dict(
-                stdout=output.read(),
-                stderr=stderr.read(),
-                exit_status=process.returncode,
-                command=command
-            ))
-            output.seek(0)
-            stderr.seek(0)
+        Args:
+            from_commit (str): A git commit reference
+            to_commit (Union[str, None}): A git commit reference,
+                default: None
 
-            raise subprocess.CalledProcessError(
-                process.returncode,
-                ' '.join(command),
-                "STDOUT:\n{0}\n-----\nSTDERR:\n{1}\n".format(output.read(),
-                                                             stderr.read())
+        Returns:
+            list[str]: The files that changed between
+                the passed in commits
+        """
+        try:
+            return self._list_of_files(
+                self.repo.git.diff(from_commit, to_commit, name_only=True)
             )
+        except git.exc.GitCommandError as exc:
+            raise DiffError(
+                "Failed to get list of changed files between '{0}' and {1}'".format(
+                    from_commit,
+                    to_commit or 'HEAD'
+                ),
+                exc
+            )
+
+    def _list_of_files(self, files):
+        return filter(lambda x: x, files.strip().split('\n'))
