@@ -32,8 +32,11 @@ class TestGit(object):
                                                          self.FIRST_GREEN_COMMIT)) == []
 
     def test_invalid_commit_ref_raises_exception(self):
-        with pytest.raises(subprocess.CalledProcessError):
+        with pytest.raises(subprocess.CalledProcessError) as exc:
             self._differ().changed_files_between('INVALID_REF')
+
+        assert exc.value.cmd == 'git diff --name-only INVALID_REF'
+        assert 'STDERR' in exc.value.output
 
     def test_set_base_path_to_non_absolute_makes_it_absolute_from_cwd(self):
         assert Git(

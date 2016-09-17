@@ -36,7 +36,7 @@ class Git(object):
     def _run(self, arguments):
         command = [self._command]
         command.extend(arguments)
-        command = filter(lambda x: x, command)  # Remove empty arguments
+        command = list(filter(lambda x: x, command))  # Remove empty arguments
 
         output = StringIO()
         stderr = StringIO()
@@ -72,7 +72,7 @@ class Git(object):
 
             raise subprocess.CalledProcessError(
                 process.returncode,
-                command,
+                ' '.join(command),
                 "STDOUT:\n{0}\n-----\nSTDERR:\n{1}\n".format(output.read(),
                                                              stderr.read())
             )
