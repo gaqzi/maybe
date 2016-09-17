@@ -13,8 +13,8 @@ from radish.utils import timer
 class BaseExecutor(object):
     _base_path = None
 
-    def run(self, path, command):
-        raise NotImplementedError('run is not implemented')
+    def execute(self, path, command):
+        raise NotImplementedError('execute is not implemented')
 
     def _null_response(self):
         return ExecutionResult.none()
@@ -39,7 +39,7 @@ class NullExecutor(BaseExecutor):
 
         self.command = None
 
-    def run(self, path, command):
+    def execute(self, path, command):
         self.command = command
         if command is None:
             return self._null_response()
@@ -56,7 +56,7 @@ class Executor(BaseExecutor):
         self.outputter = outputter
         self.base_path = base_path
 
-    def run(self, path, command):
+    def execute(self, path, command):
         if command is None:
             return self._null_response()
 

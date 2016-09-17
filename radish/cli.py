@@ -37,7 +37,7 @@ class CLI(object):
 
             self.outputter.info.write('Running {0} for {1}:\n'.format(command_name, path))
 
-            self.results.add(self.executor.run(path, cmd))
+            self.results.add(self.executor.execute(path, cmd))
 
             self.outputter.info.write('\n')
 

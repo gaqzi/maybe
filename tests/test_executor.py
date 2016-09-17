@@ -17,7 +17,7 @@ class BaseTestExecutor(object):
     def test_command_is_none_returns_none_result(self):
         executor = self._executor()
 
-        result = executor.run(Path('/tmp'), None)
+        result = executor.execute(Path('/tmp'), None)
 
         assert result == ExecutionResult.none(), 'Result was not none'
 
@@ -35,17 +35,17 @@ class TestNullExecutor(BaseTestExecutor):
     def test_run_returns_command_result_with_passed_in_exit_code(self):
         executor = self._executor()
 
-        assert executor.run(Path('/m000'), 'true') == ExecutionResult(0, 0, Path('/m000'))
+        assert executor.execute(Path('/m000'), 'true') == ExecutionResult(0, 0, Path('/m000'))
 
     def test_sets_run_time_on_result(self):
         executor = NullExecutor(0, run_time=1)
 
-        assert executor.run(Path('/m000'), 'true') == ExecutionResult(0, 1, Path('/m000'))
+        assert executor.execute(Path('/m000'), 'true') == ExecutionResult(0, 1, Path('/m000'))
 
     def test_run_writes_output_to_output_stream(self):
         outputter = Mock()
         executor = NullExecutor(0, output='Hello!', outputter=outputter)
-        executor.run(Path('/m000'), 'true')
+        executor.execute(Path('/m000'), 'true')
 
         outputter.info.write.assert_called_once_with('Hello!')
 
@@ -60,7 +60,7 @@ class TestExecutor(BaseTestExecutor):
     def test_run_returns_command_result_success_when_successful(self):
         executor = Executor()
 
-        result = executor.run(Path('/tmp'), 'true')
+        result = executor.execute(Path('/tmp'), 'true')
 
         assert result.success, 'Expected command to exit successfully'
         assert result.run_time != 0.0
@@ -68,7 +68,7 @@ class TestExecutor(BaseTestExecutor):
     def test_run_returns_command_result_failure_when_command_fails(self):
         executor = Executor()
 
-        result = executor.run(Path('/tmp'), 'false')
+        result = executor.execute(Path('/tmp'), 'false')
 
         assert not result.success, 'Expected command to not exit successfully'
         assert result.run_time != 0.0
@@ -80,7 +80,7 @@ class TestExecutor(BaseTestExecutor):
         outputter = Mock()
         executor = Executor(outputter=outputter)
 
-        executor.run(Path('/tmp'), 'echo hello')
+        executor.execute(Path('/tmp'), 'echo hello')
 
         outputter.info.write.assert_called_once_with('hello\n')
 
@@ -88,7 +88,7 @@ class TestExecutor(BaseTestExecutor):
         outputter = Mock()
         executor = Executor(outputter=outputter)
 
-        executor.run(Path('/tmp'), 'echoz hello')
+        executor.execute(Path('/tmp'), 'echoz hello')
 
         outputter.error.write.assert_called_once_with(ANY)
         assert 'echoz' in outputter.error.write.call_args[0][0]
@@ -97,7 +97,7 @@ class TestExecutor(BaseTestExecutor):
         outputter = Mock()
         executor = Executor(outputter=outputter)
 
-        executor.run(Path('/tmp'), 'echo Björn')
+        executor.execute(Path('/tmp'), 'echo Björn')
 
         outputter.info.write.assert_called_once_with('Björn\n')
 
