@@ -4,8 +4,6 @@ from fnmatch import fnmatch
 
 
 class Command(object):
-    executioner = None
-
     def __init__(self, name, mapping):
         """
 

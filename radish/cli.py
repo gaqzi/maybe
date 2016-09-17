@@ -5,26 +5,25 @@ import itertools
 import os
 import sys
 
+import radish
 import six
 import yaml
 from docopt import docopt
-
-import radish
-from radish import differs, executioners
-from radish.path import Path
+from radish import differs, executor
 from radish.command import Command
-from radish.executioners import ExecutionResults
+from radish.executor import ExecutionResults
 from radish.outputter import Outputter
+from radish.path import Path
 
 
 class CLI(object):
     results = None
 
-    def __init__(self, base_path='.', config=None, executioner=None, differ=None, outputter=None):
+    def __init__(self, base_path='.', config=None, executor=None, differ=None, outputter=None):
         self.outputter = outputter or Outputter()
         self.base_dir = os.path.abspath(base_path)
-        self.executioner = executioner or executioners.Executioner(base_path=self.base_dir,
-                                                                   outputter=outputter)
+        self.executor = executor or executor.Executor(base_path=self.base_dir,
+                                                      outputter=outputter)
         self.config = config
         self.differ = differ or differs.Git(base_path)
         self.results = ExecutionResults()
@@ -38,7 +37,7 @@ class CLI(object):
 
             self.outputter.info.write('Running {0} for {1}:\n'.format(command_name, path))
 
-            self.results.add(self.executioner.run(path, cmd))
+            self.results.add(self.executor.run(path, cmd))
 
             self.outputter.info.write('\n')
 

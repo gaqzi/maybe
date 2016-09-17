@@ -10,7 +10,7 @@ from radish.outputter import Outputter
 from radish.utils import timer
 
 
-class BaseExecutioner(object):
+class BaseExecutor(object):
     _base_path = None
 
     def run(self, path, command):
@@ -28,7 +28,7 @@ class BaseExecutioner(object):
         self._base_path = os.path.abspath(path)
 
 
-class NullExecutioner(BaseExecutioner):
+class NullExecutor(BaseExecutor):
     def __init__(self, exit_code, run_time=0, output='', base_path='.', outputter=None):
         self.exit_code = exit_code
         self.run_time = run_time
@@ -48,7 +48,7 @@ class NullExecutioner(BaseExecutioner):
         return ExecutionResult(self.exit_code, self.run_time, path)
 
 
-class Executioner(BaseExecutioner):
+class Executor(BaseExecutor):
     def __init__(self, outputter=None, base_path='.'):
         if outputter is None:
             outputter = Outputter()

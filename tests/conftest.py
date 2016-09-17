@@ -7,7 +7,7 @@ import pytest
 from radish.command import Command
 from radish.path import Path
 from radish.cli import CLI
-from radish.executioners import NullExecutioner
+from radish.executor import NullExecutor
 from radish.outputter import Outputter, OutputStream
 
 
@@ -45,15 +45,15 @@ def config():
 
 
 @pytest.fixture
-def executioner(outputter):
-    return NullExecutioner(0, outputter=outputter)
+def executor(outputter):
+    return NullExecutor(0, outputter=outputter)
 
 
 @pytest.fixture
-def cli(config, outputter, executioner):
+def cli(config, outputter, executor):
     return CLI(
         base_path='tests/support/dummy/',
         config=config,
-        executioner=executioner,
+        executor=executor,
         outputter=outputter,
     )

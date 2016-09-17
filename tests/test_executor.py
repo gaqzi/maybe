@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 import os
 
-from radish.executioners import ExecutionResult, NullExecutioner, Executioner, ExecutionResults
+from radish.executor import ExecutionResult, NullExecutor, Executor, ExecutionResults
 from radish.outputter import Outputter
 from radish.path import Path
 
@@ -13,91 +13,91 @@ except ImportError:
     from mock import Mock, ANY
 
 
-class BaseTestExecutioner(object):
+class BaseTestExecutor(object):
     def test_command_is_none_returns_none_result(self):
-        executioner = self._executioner()
+        executor = self._executor()
 
-        result = executioner.run(Path('/tmp'), None)
+        result = executor.run(Path('/tmp'), None)
 
         assert result == ExecutionResult.none(), 'Result was not none'
 
-    def _executioner(self):
-        raise NotImplementedError('Has not implemented _executioner()')
+    def _executor(self):
+        raise NotImplementedError('Has not implemented _executor()')
 
 
-class TestNullExecutioner(BaseTestExecutioner):
-    def _executioner(self):
-        return NullExecutioner(0)
+class TestNullExecutor(BaseTestExecutor):
+    def _executor(self):
+        return NullExecutor(0)
 
     def test_takes_a_base_path_argument(self):
-        assert NullExecutioner(0, base_path='.').base_path == os.path.abspath('.')
+        assert NullExecutor(0, base_path='.').base_path == os.path.abspath('.')
 
     def test_run_returns_command_result_with_passed_in_exit_code(self):
-        executioner = self._executioner()
+        executor = self._executor()
 
-        assert executioner.run(Path('/m000'), 'true') == ExecutionResult(0, 0, Path('/m000'))
+        assert executor.run(Path('/m000'), 'true') == ExecutionResult(0, 0, Path('/m000'))
 
     def test_sets_run_time_on_result(self):
-        executioner = NullExecutioner(0, run_time=1)
+        executor = NullExecutor(0, run_time=1)
 
-        assert executioner.run(Path('/m000'), 'true') == ExecutionResult(0, 1, Path('/m000'))
+        assert executor.run(Path('/m000'), 'true') == ExecutionResult(0, 1, Path('/m000'))
 
     def test_run_writes_output_to_output_stream(self):
         outputter = Mock()
-        executioner = NullExecutioner(0, output='Hello!', outputter=outputter)
-        executioner.run(Path('/m000'), 'true')
+        executor = NullExecutor(0, output='Hello!', outputter=outputter)
+        executor.run(Path('/m000'), 'true')
 
         outputter.info.write.assert_called_once_with('Hello!')
 
 
-class TestExecutioner(BaseTestExecutioner):
-    def _executioner(self):
-        return Executioner(outputter=Mock())
+class TestExecutor(BaseTestExecutor):
+    def _executor(self):
+        return Executor(outputter=Mock())
 
     def test_takes_a_base_path_argument(self):
-        assert Executioner(base_path='.').base_path == os.path.abspath('.')
+        assert Executor(base_path='.').base_path == os.path.abspath('.')
 
     def test_run_returns_command_result_success_when_successful(self):
-        executioner = Executioner()
+        executor = Executor()
 
-        result = executioner.run(Path('/tmp'), 'true')
+        result = executor.run(Path('/tmp'), 'true')
 
         assert result.success, 'Expected command to exit successfully'
         assert result.run_time != 0.0
 
     def test_run_returns_command_result_failure_when_command_fails(self):
-        executioner = Executioner()
+        executor = Executor()
 
-        result = executioner.run(Path('/tmp'), 'false')
+        result = executor.run(Path('/tmp'), 'false')
 
         assert not result.success, 'Expected command to not exit successfully'
         assert result.run_time != 0.0
 
     def test_it_accepts_an_outputter(self):
-        Executioner(outputter=Outputter())
+        Executor(outputter=Outputter())
 
     def test_run_outputs_through_outputter(self):
         outputter = Mock()
-        executioner = Executioner(outputter=outputter)
+        executor = Executor(outputter=outputter)
 
-        executioner.run(Path('/tmp'), 'echo hello')
+        executor.run(Path('/tmp'), 'echo hello')
 
         outputter.info.write.assert_called_once_with('hello\n')
 
     def test_run_stderr_outputs_through_outputter(self):
         outputter = Mock()
-        executioner = Executioner(outputter=outputter)
+        executor = Executor(outputter=outputter)
 
-        executioner.run(Path('/tmp'), 'echoz hello')
+        executor.run(Path('/tmp'), 'echoz hello')
 
         outputter.error.write.assert_called_once_with(ANY)
         assert 'echoz' in outputter.error.write.call_args[0][0]
 
     def test_decode_output_to_utf8_before_writing(self):
         outputter = Mock()
-        executioner = Executioner(outputter=outputter)
+        executor = Executor(outputter=outputter)
 
-        executioner.run(Path('/tmp'), 'echo Björn')
+        executor.run(Path('/tmp'), 'echo Björn')
 
         outputter.info.write.assert_called_once_with('Björn\n')
 
