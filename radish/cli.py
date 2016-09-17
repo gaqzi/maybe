@@ -9,9 +9,9 @@ import radish
 import six
 import yaml
 from docopt import docopt
-from radish import differs, executor
+from radish import differs
 from radish.command import Command
-from radish.executor import ExecutionResults
+from radish.executor import Executor, ExecutionResults
 from radish.outputter import Outputter
 from radish.path import Path
 
@@ -22,8 +22,8 @@ class CLI(object):
     def __init__(self, base_path='.', config=None, executor=None, differ=None, outputter=None):
         self.outputter = outputter or Outputter()
         self.base_dir = os.path.abspath(base_path)
-        self.executor = executor or executor.Executor(base_path=self.base_dir,
-                                                      outputter=outputter)
+        self.executor = executor or Executor(base_path=self.base_dir,
+                                             outputter=outputter)
         self.config = config
         self.differ = differ or differs.Git(base_path)
         self.results = ExecutionResults()
