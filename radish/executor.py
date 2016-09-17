@@ -7,7 +7,7 @@ from io import StringIO
 import six
 
 from radish.outputter import Outputter
-from radish.utils import timer
+from radish.utils import timer, TimeTaken
 
 
 class BaseExecutor(object):
@@ -64,7 +64,7 @@ class Executor(BaseExecutor):
 
         return ExecutionResult(
             exit_code=process.returncode,
-            run_time=run_time.total_seconds(),
+            run_time=run_time,
             path=path,
         )
 
@@ -150,7 +150,7 @@ class ExecutionResults(object):
 
     @property
     def run_time(self):
-        return sum(map(lambda x: x.run_time, self._results), 0.0)
+        return sum(map(lambda x: x.run_time, self._results), TimeTaken(0))
 
     @property
     def paths(self):

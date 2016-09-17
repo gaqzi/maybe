@@ -10,12 +10,12 @@ def timer(kallable):
         kallable (Callable[[], T):
 
     Returns:
-        (T, datetime.timedelta): Any return value from
-            the passed in callable and the time it took to run it
+        (T, TimeTaken): Any return value from the passed in callable
+            and the time it took to run it
     """
     start_time = datetime.now()
 
-    return kallable(), datetime.now() - start_time
+    return kallable(), TimeTaken(datetime.now() - start_time)
 
 
 class TimeTaken(object):

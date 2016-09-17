@@ -6,6 +6,7 @@ import os
 from radish.executor import ExecutionResult, NullExecutor, Executor, ExecutionResults
 from radish.outputter import Outputter
 from radish.path import Path
+from radish.utils import TimeTaken
 
 try:
     from unittest.mock import Mock, ANY
@@ -134,6 +135,12 @@ class TestExecutionResults(object):
         result.add(ExecutionResult(0, 1.0, '/meep'))
 
         assert result.run_time == 1.1
+
+    def test_run_times_returns_a_time_taken_instance(self):
+        result = ExecutionResults()
+        result.add(ExecutionResult(0, 0.1, '/m000'))
+
+        assert isinstance(result.run_time, TimeTaken)
 
     def test_no_results_no_paths(self):
         assert ExecutionResults().paths == []

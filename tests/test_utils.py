@@ -2,7 +2,19 @@ from time import sleep
 
 import pytest
 
-from radish.utils import TimeTaken
+from radish.utils import timer, TimeTaken
+
+
+class TestTimer(object):
+    def test_returns_the_return_value_of_the_passed_in_callable(self):
+        return_value, _ = timer(lambda: 'Hello')
+
+        assert return_value == 'Hello'
+
+    def test_records_the_time_taken_for_passed_in_callable(self):
+        _, run_time = timer(lambda: sleep(0.01))
+
+        assert run_time.elapsed_time.total_seconds() > 0
 
 
 class TestTimeTaken(object):
