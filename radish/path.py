@@ -59,10 +59,8 @@ class Path(object):
                     return self._match_glob(other.path)
                 elif self.GLOB_CHARACTER in other.path:
                     return other == self
-        elif bool(self) == bool(other):
-            return True
-
-        return False
+        else:
+            return bool(self) == bool(other)
 
     def __hash__(self):
         return hash(self.path)

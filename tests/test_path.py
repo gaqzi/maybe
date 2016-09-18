@@ -4,6 +4,14 @@ from radish.path import Path
 
 
 class TestPath(object):
+    def test_casts_to_boolean_when_a_path(self):
+        assert Path('/')
+        assert not Path(None)
+
+    def test_boolean_for_both_py2_and_py3(self):
+        p = Path('/')
+        assert p.__bool__() and p.__nonzero__()
+
     def test_return_false_when_file_doesnt_match(self):
         path = Path('extensions/cool-extension')
 
