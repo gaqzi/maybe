@@ -114,6 +114,11 @@ class TestExecutionResults(object):
 
         assert bool(result) == result.success
 
+    def test_boolean_for_both_py2_and_py3(self):
+        result = ExecutionResults()
+
+        assert result.__bool__() == result.__nonzero__()
+
     def test_add_successful_result_sets_success_to_true(self):
         result = ExecutionResults()
         result.add(ExecutionResult(0, 0.1, '/m000'))
@@ -178,6 +183,11 @@ class TestExecutionResult(object):
         result = ExecutionResult(1, 0.1, '/m000')
 
         assert bool(result) == result.success
+
+    def test_boolean_for_both_py2_and_py3(self):
+        result = ExecutionResult(1, 0.1, '/m000')
+
+        assert result.__bool__() == result.__nonzero__()
 
     def test_stores_run_time_in_seconds(self):
         assert ExecutionResult(0, 0.1, '/m000').run_time == 0.1
