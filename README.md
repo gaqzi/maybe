@@ -2,6 +2,7 @@ radish
 ======
 
 [![CircleCI](https://circleci.com/gh/gaqzi/radish.svg?style=shield)](https://circleci.com/gh/gaqzi/radish)
+[![Coverage](https://codecov.io/gh/gaqzi/radish/branch/master/graph/badge.svg)](https://codecov.io/gh/gaqzi/radish)
 [![Latest Version](https://img.shields.io/pypi/v/radish-run.svg)](https://pypi.python.org/pypi/radish-run/)
 [![Python versions](https://img.shields.io/pypi/pyversions/radish-run.svg)](https://pypi.python.org/pypi/radish-run/)
 
