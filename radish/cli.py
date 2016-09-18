@@ -5,10 +5,11 @@ import itertools
 import os
 import sys
 
-import radish
 import six
 import yaml
 from docopt import docopt
+
+import radish
 from radish import differs
 from radish.command import Command
 from radish.executor import Executor, ExecutionResults
@@ -58,7 +59,7 @@ def get_config_file(*filenames):
         if os.path.exists(filename):
             return os.path.abspath(filename)
 
-    raise Exception('No "Radishfile" available')
+    raise OSError('No file "{0}" found'.format(', '.join(filenames)))
 
 
 def match(lines, paths):
@@ -126,7 +127,9 @@ def main():
     """
     arguments = docopt(six.text_type(main.__doc__), version='radish {0}'.format(radish.__version__))
 
-    cli = CLI(config=read_config(get_config_file('Radishfile', 'Radishfile.yml')))
+    cli = CLI(
+        config=read_config(get_config_file('Radishfile', 'Radishfile.yml'))
+    )
 
     if arguments['command'] or arguments['cmd']:
         changed_projects = cli.changed_projects(

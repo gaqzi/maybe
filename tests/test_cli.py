@@ -1,6 +1,10 @@
 from __future__ import unicode_literals
 
+import os
 from io import StringIO
+
+import pytest
+from path import path
 
 import radish.cli
 from radish.command import Command
@@ -67,6 +71,20 @@ class TestCli(object):
 
         out = cli.outputter.info.streams[0].getvalue()
         assert out == 'Running test for extensions/rules/:\n\n'
+
+
+class TestGetConfigFile(object):
+    def test_raises_exception_if_the_file_isnt_found(self):
+        with pytest.raises(OSError) as exc:
+            radish.cli.get_config_file('wololooo')
+
+        assert exc.value.args[0] == 'No file "wololooo" found'
+
+    def test_any_of_the_passed_in_file_exists_the_absolute_path_gets_returned(self):
+        with path('tests/support/dummy/'):
+            found_file = radish.cli.get_config_file('wololoo', 'Radishfile')
+
+            assert found_file == os.path.join(os.getcwd(), 'Radishfile')
 
 
 class TestMatch(object):
