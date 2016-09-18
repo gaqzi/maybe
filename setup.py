@@ -37,7 +37,6 @@ extra_dependencies = []
 extra_test_dependencies = []
 if sys.version_info < (3, 0):
     extra_dependencies = [
-        'subprocess32',
     ]
     extra_test_dependencies = [
         'mock',
