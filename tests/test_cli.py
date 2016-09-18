@@ -195,18 +195,20 @@ class TestMain(object):
 
     @mock.patch('radish.cli.CLI', autospec=True)
     class TestCommand(object):
+        def assert_command(self, cli_args, exit_code):
+            with pytest.raises(radish.cli.RadishExit) as exc:
+                with path('tests/support/dummy/'):
+                    radish.cli.main(cli_args)
+            assert exc.value.code == exit_code
+
         def test_invalid_command(self, cli_mock, cli):
             cli_mock.return_value = cli
 
-            with pytest.raises(radish.cli.RadishExit) as exc:
-                with path('tests/support/dummy/'):
-                    radish.cli.main(['command', 'wololooo'])
-
-            assert exc.value.code == (
+            self.assert_command(['command', 'wololooo'], (
                 'No command "wololooo" registered.\n\n'
                 'Available commands:\n'
                 '\ttest'
-            )
+            ))
 
         def test_finds_command_successfully_print_status_on_outputter(self, cli_mock, outputter):
             results = ExecutionResults()
@@ -217,12 +219,8 @@ class TestMain(object):
             cli.changed_projects.return_value = ['extensions/m000/']
             cli.run.return_value = results
 
-            with pytest.raises(radish.cli.RadishExit) as exc:
-                with path('tests/support/dummy/'):
-                    radish.cli.main(['command', 'test'])
-
-            assert exc.value.code == 0, 'Was supposed to exit successfully'
-            assert outputter.info.streams[0].getvalue() == (
+            self.assert_command(['command', 'test'], 0)
+            assert cli.outputter.info.streams[0].getvalue() == (
                 'Changed paths:\n'
                 '\textensions/m000/\n'
                 'extensions/m000/: Success (1.12)\n'
@@ -237,8 +235,4 @@ class TestMain(object):
             cli.outputter = mock.create_autospec(Outputter())
             cli.run.return_value = results
 
-            with pytest.raises(radish.cli.RadishExit) as exc:
-                with path('tests/support/dummy/'):
-                    radish.cli.main(['command', 'test'])
-
-            assert exc.value.code == 10
+            self.assert_command(['command', 'test'], 10)
