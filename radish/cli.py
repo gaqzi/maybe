@@ -17,15 +17,12 @@ from radish.path import Path
 
 
 class CLI(object):
-    results = None
-
     def __init__(self, base_path='.', config=None, executor=None, differ=None, outputter=None):
-        self.outputter = outputter or Outputter()
         self.base_dir = os.path.abspath(base_path)
-        self.executor = executor or Executor(base_path=self.base_dir,
-                                             outputter=outputter)
+        self.outputter = outputter or Outputter()
+        self.executor = executor or Executor(base_path=self.base_dir, outputter=self.outputter)
         self.config = config
-        self.differ = differ or differs.Git(base_path)
+        self.differ = differ or differs.Git(self.base_dir)
         self.results = ExecutionResults()
 
     def run(self, command_name, paths):

@@ -4,12 +4,35 @@ from io import StringIO
 
 import radish.cli
 from radish.command import Command
+from radish.outputter import Outputter
 from radish.path import Path
 
 
 class TestCli(object):
     FIRST_GREEN_COMMIT = '10aac02e05'
     FIRST_GREEN_COMMIT_PY = '39e0889d06'
+
+    class TestInit(object):
+        def test_outputter_gets_instantiated_if_not_passed_in(self):
+            cli = radish.cli.CLI(outputter=None)
+
+            assert isinstance(cli.outputter, Outputter)
+
+        def test_base_dir_is_converted_to_absolute_path(self):
+            cli = radish.cli.CLI(base_path='.')
+
+            assert cli.base_dir.startswith('/')
+
+        def test_executor_gets_instantiated_with_base_dir_and_outputter(self):
+            cli = radish.cli.CLI(executor=None)
+
+            assert cli.executor.base_path == cli.base_dir
+            assert cli.executor.outputter == cli.outputter
+
+        def test_differ_gets_instantiated_with_base_dir(self):
+            cli = radish.cli.CLI(differ=None, base_path='/tmp')
+
+            assert cli.differ.base_path == cli.base_dir
 
     def test_changed_projects_returns_all_configured_paths_with_no_commits_given(self, cli):
         assert cli.changed_projects() == {'extensions/rules/', 'js/frontend/', 'js/mobile/'}
