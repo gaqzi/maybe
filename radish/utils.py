@@ -66,13 +66,7 @@ class TimeTaken(object):
         Raises:
             TypeError: For others that can't be used by timedelta
         """
-        if hasattr(other, 'elapsed_time'):
-            return TimeTaken(self.elapsed_time + other.elapsed_time)
-        else:
-            if isinstance(other, (int, float)):
-                other = timedelta(seconds=other)
-
-        return TimeTaken(self.elapsed_time + other)
+        return TimeTaken(self._delegate_to_timedelta('__add__', other))
 
     def __sub__(self, other):
         """Adds the time from another object and returns a new instance
@@ -86,22 +80,21 @@ class TimeTaken(object):
         Raises:
             TypeError: For others that can't be used by timedelta
         """
-        if hasattr(other, 'elapsed_time'):
-            return TimeTaken(self.elapsed_time - other.elapsed_time)
-        else:
-            if isinstance(other, (int, float)):
-                other = timedelta(seconds=other)
-
-            return TimeTaken(self.elapsed_time - other)
+        return TimeTaken(self._delegate_to_timedelta('__sub__', other))
 
     def __eq__(self, other):
+        return self._delegate_to_timedelta('__eq__', other)
+
+    def _delegate_to_timedelta(self, method_name, other):
+        method = getattr(self.elapsed_time, method_name)
+
         if hasattr(other, 'elapsed_time'):
-            return self.elapsed_time == other.elapsed_time
+            return method(other.elapsed_time)
         else:
             if isinstance(other, (int, float)):
                 other = timedelta(seconds=other)
 
-            return self.elapsed_time == other
+            return method(other)
 
     def _pluralize(self, value, singular, plural):
         if value:
