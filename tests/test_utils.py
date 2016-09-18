@@ -36,7 +36,7 @@ class TestTimeTaken(object):
         def test_taken_less_than_a_minute(self):
             assert str(TimeTaken(30.5)) == '30.5 seconds'
             assert str(TimeTaken(1)) == '1.0 second'
-            assert str(TimeTaken(0.1)) == '0.1 second'
+            assert str(TimeTaken(0.1)) == '0.1 seconds'
 
         def test__str__and__unicode__returns_the_same(self):
             time = TimeTaken(30.5)

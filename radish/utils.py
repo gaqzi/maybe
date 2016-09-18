@@ -107,7 +107,7 @@ class TimeTaken(object):
         if value:
             return '{} {}'.format(
                 value,
-                plural if value > 1 else singular
+                plural if value > 1 or (1.0 > value > 0.0) else singular
             )
 
     def _join_output(self, times):
