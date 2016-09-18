@@ -38,6 +38,13 @@ class TestCli(object):
 
             assert cli.differ.base_path == cli.base_dir
 
+    class TestFindCommand(object):
+        def test_returns_the_named_command_if_it_exists(self, cli):
+            assert cli.find_command('test')
+
+        def test_returns_none_when_nothing_found(self, cli):
+            assert cli.find_command('wololooo') is None
+
     def test_changed_projects_returns_all_configured_paths_with_no_commits_given(self, cli):
         assert cli.changed_projects() == {'extensions/rules/', 'js/frontend/', 'js/mobile/'}
 

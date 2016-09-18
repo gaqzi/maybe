@@ -53,6 +53,9 @@ class CLI(object):
             self.config['paths']
         )
 
+    def find_command(self, command_name):
+        return next((c for c in self.config['commands'] if c.name == command_name), None)
+
 
 def get_config_file(*filenames):
     for filename in filenames:
