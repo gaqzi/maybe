@@ -3,7 +3,6 @@ from __future__ import unicode_literals, print_function
 import glob
 import itertools
 import os
-import sys
 
 import six
 import yaml
@@ -117,7 +116,12 @@ def read_config(conf_file):
     return config
 
 
-def main():
+class RadishExit(SystemExit):
+    def __init__(self, message_or_code):
+        super(RadishExit, self).__init__(message_or_code)
+
+
+def main(args=None):
     """radish a task runner that understands version control
 
     Usage:
@@ -131,37 +135,49 @@ def main():
       -h --help             Show this screen
       --version             Show version
     """
-    arguments = docopt(six.text_type(main.__doc__), version='radish {0}'.format(radish.__version__))
+    arguments = docopt(
+        six.text_type(main.__doc__),
+        version='radish {0}'.format(radish.__version__),
+        argv=args
+    )
 
     cli = CLI(
         config=read_config(get_config_file('Radishfile', 'Radishfile.yml'))
     )
 
-    if arguments['command'] or arguments['cmd']:
-        changed_projects = cli.changed_projects(
-            from_commit=arguments['--from'],
-            to_commit=arguments['--to'],
+    command = cli.find_command(arguments['<command>'])
+    if not command:
+        raise RadishExit(
+            'No command "{0}" registered.\n\nAvailable commands:\n\t{1}'.format(
+                arguments['<command>'],
+                '\n\t'.join(map(lambda cmd: cmd.name, cli.config['commands']))
+            )
         )
 
-        print('Changed paths:')
-        for project in changed_projects:
-            print('\t{0}'.format(project))
-        print()
+    changed_projects = cli.changed_projects(
+        from_commit=arguments['--from'],
+        to_commit=arguments['--to'],
+    )
 
-        results = cli.run(
-            command_name=arguments['<command>'],
-            paths=changed_projects,
+    cli.outputter.info.write('Changed paths:\n')
+    for project in changed_projects:
+        cli.outputter.info.write('\t{0}'.format(project))
+    cli.outputter.info.write('\n')
+
+    results = cli.run(
+        command_name=command,
+        paths=changed_projects,
+    )
+
+    for result in results:
+        cli.outputter.info.write(
+            '{}: {} ({})'.format(
+                result.path,
+                'Success' if result.success else 'Failure',
+                result.run_time
+            )
         )
+    cli.outputter.info.write('\n')
+    cli.outputter.info.write('Commands finished in {}\n'.format(results.run_time))
 
-        for result in results:
-            print('{}: {} ({})'.format(result.path,
-                                       'Success' if result.success else 'Failure',
-                                       result.run_time))
-        print()
-        print('Commands finished in {}'.format(results.run_time))
-
-        exit(0 if results else 1)
-    else:
-        print('I have no idea how we ended up here', file=sys.stderr)
-        print(__doc__)
-        exit(1)
+    raise RadishExit(0 if results else 10)

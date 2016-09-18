@@ -3,6 +3,15 @@ from __future__ import unicode_literals
 import os
 from io import StringIO
 
+from docopt import DocoptExit
+
+from radish.executor import ExecutionResult, ExecutionResults
+
+try:
+    from unittest import mock
+except ImportError:
+    import mock
+
 import pytest
 from path import path
 
@@ -175,3 +184,61 @@ class TestConfigParser(object):
                 'frontend/js': 'npm test'
             })
         }
+
+
+class TestMain(object):
+    def test_no_passed_arguments_gives_the_version(self, ):
+        with pytest.raises(DocoptExit) as exc:
+            radish.cli.main([])
+
+        assert 'Usage:' in exc.value.usage
+
+    @mock.patch('radish.cli.CLI', autospec=True)
+    class TestCommand(object):
+        def test_invalid_command(self, cli_mock, cli):
+            cli_mock.return_value = cli
+
+            with pytest.raises(radish.cli.RadishExit) as exc:
+                with path('tests/support/dummy/'):
+                    radish.cli.main(['command', 'wololooo'])
+
+            assert exc.value.code == (
+                'No command "wololooo" registered.\n\n'
+                'Available commands:\n'
+                '\ttest'
+            )
+
+        def test_finds_command_successfully_print_status_on_outputter(self, cli_mock, outputter):
+            results = ExecutionResults()
+            results.add(ExecutionResult(0, 1.12, 'extensions/m000/'))
+
+            cli = cli_mock.return_value
+            cli.outputter = outputter
+            cli.changed_projects.return_value = ['extensions/m000/']
+            cli.run.return_value = results
+
+            with pytest.raises(radish.cli.RadishExit) as exc:
+                with path('tests/support/dummy/'):
+                    radish.cli.main(['command', 'test'])
+
+            assert exc.value.code == 0, 'Was supposed to exit successfully'
+            assert outputter.info.streams[0].getvalue() == (
+                'Changed paths:\n'
+                '\textensions/m000/\n'
+                'extensions/m000/: Success (1.12)\n'
+                'Commands finished in 1.12 seconds\n'
+            )
+
+        def test_unsuccessful_command_run_exits_10(self, cli_mock):
+            results = ExecutionResults()
+            results.add(ExecutionResult(1, 0.2, '/'))
+
+            cli = cli_mock.return_value
+            cli.outputter = mock.create_autospec(Outputter())
+            cli.run.return_value = results
+
+            with pytest.raises(radish.cli.RadishExit) as exc:
+                with path('tests/support/dummy/'):
+                    radish.cli.main(['command', 'test'])
+
+            assert exc.value.code == 10
