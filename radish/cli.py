@@ -27,7 +27,10 @@ class CLI(object):
         self.results = ExecutionResults()
 
     def run(self, command_name, paths):
-        command = next((c for c in self.config['commands'] if c.name == command_name), None)
+        if isinstance(command_name, Command):
+            command = command_name
+        else:
+            command = self.find_command(command_name)
 
         for path, cmd in command.items(filter=paths):
             if cmd is None:

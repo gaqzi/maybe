@@ -63,6 +63,14 @@ class TestCli(object):
         assert len(results.paths) == 3
         assert results.paths == paths
 
+    def test_passed_in_can_be_a_command_instance(self, cli):
+        command = cli.find_command('test')
+        paths = list(cli.changed_projects())
+
+        cli.run(command, paths)
+
+        assert cli.results.success
+
     def test_returns_empty_result_when_theres_no_matched_paths(self, cli):
         results = cli.run('test', ['error/'])
 
