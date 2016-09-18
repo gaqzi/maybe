@@ -2,11 +2,9 @@ from __future__ import unicode_literals
 
 import os
 import subprocess
-from io import StringIO
 
 import six
 
-from radish.outputter import Outputter
 from radish.utils import timer, TimeTaken
 
 
@@ -35,7 +33,7 @@ class NullExecutor(BaseExecutor):
         self.output = output
         self.base_path = base_path
 
-        self.outputter = outputter or Outputter(StringIO(), StringIO())
+        self.outputter = outputter
 
         self.command = None
 
@@ -44,15 +42,14 @@ class NullExecutor(BaseExecutor):
         if command is None:
             return self._null_response()
 
-        self.outputter.info.write(six.text_type(self.output))
+        if self.outputter:
+            self.outputter.info.write(six.text_type(self.output))
+
         return ExecutionResult(self.exit_code, self.run_time, path)
 
 
 class Executor(BaseExecutor):
     def __init__(self, outputter=None, base_path='.'):
-        if outputter is None:
-            outputter = Outputter()
-
         self.outputter = outputter
         self.base_path = base_path
 
@@ -88,8 +85,9 @@ class Executor(BaseExecutor):
 
         while process.returncode is None:
             stdout, stderr = process.communicate()
-            self.outputter.info.write(six.text_type(stdout.decode('utf-8')))
-            self.outputter.error.write(six.text_type(stderr.decode('utf-8')))
+            if self.outputter:
+                self.outputter.info.write(six.text_type(stdout.decode('utf-8')))
+                self.outputter.error.write(six.text_type(stderr.decode('utf-8')))
 
         return process
 
