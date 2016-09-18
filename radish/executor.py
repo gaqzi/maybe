@@ -78,7 +78,7 @@ class Executor(BaseExecutor):
         process = subprocess.Popen(
             command,
             shell=True,
-            cwd=self._make_absolute_path(str(path)),
+            cwd=str(path),
             stderr=subprocess.PIPE,
             stdout=subprocess.PIPE
         )
@@ -90,12 +90,6 @@ class Executor(BaseExecutor):
                 self.outputter.error.write(six.text_type(stderr.decode('utf-8')))
 
         return process
-
-    def _make_absolute_path(self, path):
-        if not os.path.isabs(path):
-            path = os.path.abspath(os.path.join(self.base_path, path))
-
-        return path
 
 
 class ExecutionResult(object):
