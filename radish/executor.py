@@ -11,7 +11,7 @@ from radish.utils import timer, TimeTaken
 class BaseExecutor(object):
     _base_path = None
 
-    def execute(self, path, command):
+    def execute(self, path, command):  # pragma: no cover
         raise NotImplementedError('execute is not implemented')
 
     def _null_response(self):

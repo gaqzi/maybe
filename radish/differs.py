@@ -24,7 +24,7 @@ class DifferBase(object):
     def base_path(self, value):
         self._base_path = os.path.abspath(value)
 
-    def changed_files_between(self, from_commit, to_commit=None):
+    def changed_files_between(self, from_commit, to_commit=None):  # pragma: no cover
         raise NotImplementedError('changed_files_between is not implemented.')
 
 
