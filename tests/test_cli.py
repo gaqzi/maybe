@@ -224,7 +224,7 @@ class TestMain(object):
             assert_command(['command', 'test'], 0)
             assert cli.outputter.info.streams[0].getvalue() == (
                 'Changed paths:\n'
-                '\textensions/m000/\n'
+                '\textensions/m000/\n\n'
                 'extensions/m000/: Success (1.12)\n'
                 'Commands finished in 1.12 seconds\n'
             )
@@ -238,3 +238,22 @@ class TestMain(object):
             cli.run.return_value = results
 
             assert_command(['command', 'test'], 10)
+
+    @mock.patch('radish.cli.CLI', autospec=True)
+    class TestParallelization(object):
+        def test_runs_only_a_limited_number_of_projects_when_jobs_and_job_set(self, cli_mock,
+                                                                              outputter):
+            results = ExecutionResults()
+            results.add(ExecutionResult(0, 1.12, 'extensions/m000/'))
+
+            cli = cli_mock.return_value
+            cli.outputter = outputter
+            cli.changed_projects.return_value = ['extensions/first/', 'extensions/m000/']
+            cli.run.return_value = results
+
+            assert_command(['command', 'test', '--jobs', '2', '--job', '1'], 0)
+
+            assert 'in parallel as job 2/2' in cli.outputter.info.streams[0].getvalue()
+            assert cli.run.call_count == 1
+            args, kwargs = cli.run.call_args
+            assert kwargs['paths'] == ['extensions/m000/']

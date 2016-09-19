@@ -10,6 +10,7 @@ from docopt import docopt
 
 import radish
 from radish import differs
+from radish import splitter
 from radish.command import Command
 from radish.executor import Executor, ExecutionResults
 from radish.outputter import Outputter
@@ -124,16 +125,19 @@ class RadishExit(SystemExit):
 def main(args=None):
     """radish a task runner that understands version control
 
-    Usage:
-      radish command <command> [--from=<from_commit> [--to=<to_commit>]]
-      radish (-h | --help)
-      radish --version
+Usage:
+  radish command <command> [--from=<from_commit> [--to=<to_commit>]]
+                           [--jobs=<jobs> [--job=<job_index>]]
+  radish (-h | --help)
+  radish --version
 
-    Options:
-      --from=<from_commit>  The commit or reference to compare from
-      --to=<to_commit>      The commit or reference to compare to
-      -h --help             Show this screen
-      --version             Show version
+  --from=<from_commit>         The commit or reference to compare from
+  --to=<to_commit>             The commit or reference to compare to
+  -j <jobs>, --jobs=<jobs>     The number of parallel jobs to run
+  -J <job_index>, --job=<job_index>  The index of the current job to run, will
+                               consistently map jobs to run to this index.
+  -h, --help                   Show this screen
+  --version                    Show version
     """
     arguments = docopt(
         six.text_type(main.__doc__),
@@ -154,14 +158,32 @@ def main(args=None):
             )
         )
 
-    changed_projects = cli.changed_projects(
-        from_commit=arguments['--from'],
-        to_commit=arguments['--to'],
+    changed_projects = splitter.split(
+        cli.changed_projects(
+            from_commit=arguments['--from'],
+            to_commit=arguments['--to'],
+        ),
+        splits=arguments['--jobs'],
+        index=arguments['--job']
     )
+
+    if arguments['--jobs']:
+        if arguments['--job']:
+            no_jobs = 'as job {}/{}'.format(
+                int(arguments['--job']) + 1,
+                arguments['--jobs']
+            )
+        else:
+            no_jobs = 'with {} processes'.format(arguments['--jobs'])
+
+        cli.outputter.info.write('Running commmand {} in parallel {}\n\n'.format(
+            command.name,
+            no_jobs
+        ))
 
     cli.outputter.info.write('Changed paths:\n')
     for project in changed_projects:
-        cli.outputter.info.write('\t{0}'.format(project))
+        cli.outputter.info.write('\t{0}\n'.format(project))
     cli.outputter.info.write('\n')
 
     results = cli.run(
