@@ -186,6 +186,14 @@ class TestConfigParser(object):
         }
 
 
+def assert_command(cli_args, exit_code):
+    with pytest.raises(radish.cli.RadishExit) as exc:
+        with path('tests/support/dummy/'):
+            radish.cli.main(cli_args)
+
+    assert exc.value.code == exit_code
+
+
 class TestMain(object):
     def test_no_passed_arguments_gives_the_version(self, ):
         with pytest.raises(DocoptExit) as exc:
@@ -195,16 +203,10 @@ class TestMain(object):
 
     @mock.patch('radish.cli.CLI', autospec=True)
     class TestCommand(object):
-        def assert_command(self, cli_args, exit_code):
-            with pytest.raises(radish.cli.RadishExit) as exc:
-                with path('tests/support/dummy/'):
-                    radish.cli.main(cli_args)
-            assert exc.value.code == exit_code
-
         def test_invalid_command(self, cli_mock, cli):
             cli_mock.return_value = cli
 
-            self.assert_command(['command', 'wololooo'], (
+            assert_command(['command', 'wololooo'], (
                 'No command "wololooo" registered.\n\n'
                 'Available commands:\n'
                 '\ttest'
@@ -219,7 +221,7 @@ class TestMain(object):
             cli.changed_projects.return_value = ['extensions/m000/']
             cli.run.return_value = results
 
-            self.assert_command(['command', 'test'], 0)
+            assert_command(['command', 'test'], 0)
             assert cli.outputter.info.streams[0].getvalue() == (
                 'Changed paths:\n'
                 '\textensions/m000/\n'
@@ -235,4 +237,4 @@ class TestMain(object):
             cli.outputter = mock.create_autospec(Outputter())
             cli.run.return_value = results
 
-            self.assert_command(['command', 'test'], 10)
+            assert_command(['command', 'test'], 10)
