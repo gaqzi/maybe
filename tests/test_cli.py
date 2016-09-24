@@ -225,7 +225,7 @@ class TestMain(object):
             assert cli.outputter.info.streams[0].getvalue() == (
                 'Changed paths:\n'
                 '\textensions/m000/\n\n'
-                'extensions/m000/: Success (1.12)\n'
+                'extensions/m000/: Success (1.12)\n\n'
                 'Commands finished in 1.12 seconds\n'
             )
 

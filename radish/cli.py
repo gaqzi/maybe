@@ -193,7 +193,7 @@ Usage:
 
     for result in results:
         cli.outputter.info.write(
-            '{}: {} ({})'.format(
+            '{}: {} ({})\n'.format(
                 result.path,
                 'Success' if result.success else 'Failure',
                 result.run_time
