@@ -16,6 +16,7 @@ from radish.command import Command
 from radish.executor import Executor, ExecutionResults
 from radish.outputter import Outputter
 from radish.path import Path
+from radish.utils import timer
 
 
 class CLI(object):
@@ -190,6 +191,7 @@ Usage:
         index=arguments['--job']
     )
 
+    jobs = 1
     if arguments['--jobs']:
         if arguments['--job']:
             no_jobs = 'as job {}/{}'.format(
@@ -197,6 +199,7 @@ Usage:
                 arguments['--jobs']
             )
         else:
+            jobs = int(arguments['--jobs'])
             no_jobs = 'with {} processes'.format(arguments['--jobs'])
 
         cli.outputter.info.write('Running commmand {} in parallel {}\n\n'.format(
@@ -212,6 +215,7 @@ Usage:
     results = cli.run(
         command_name=command,
         paths=changed_projects,
+        jobs=jobs
     )
 
     for result in results:

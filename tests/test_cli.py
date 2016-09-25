@@ -296,10 +296,14 @@ class TestMain(object):
             assert cli.run.call_count == 1
             args, kwargs = cli.run.call_args
             assert kwargs['paths'] == ['extensions/m000/']
+            assert kwargs['jobs'] == 1
 
         def test_runs_all_in_parallel_when_no_job_index_specified(self, cli_mock, outputter):
             cli = self._setup(cli_mock, outputter)
 
             assert_command(['command', 'test', '--jobs', '2'], 0)
 
+            assert cli.run.call_count == 1
+            args, kwargs = cli.run.call_args
+            assert kwargs['jobs'] == 2
             assert 'in parallel with 2 processes' in cli.outputter.info.streams[0].getvalue()
