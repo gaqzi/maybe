@@ -1,5 +1,6 @@
 from __future__ import unicode_literals, print_function
 
+import concurrent.futures
 import glob
 import itertools
 import os
@@ -26,21 +27,15 @@ class CLI(object):
         self.differ = differ or differs.Git(self.base_dir)
         self.results = ExecutionResults()
 
-    def run(self, command_name, paths):
+    def run(self, command_name, paths, jobs=1):
         if isinstance(command_name, Command):
             command = command_name
         else:
             command = self.find_command(command_name)
 
-        for path, cmd in command.items(filter=paths):
-            if cmd is None:
-                continue
-
-            self.outputter.info.write('Running {0} for {1}:\n'.format(command_name, path))
-
-            self.results.add(self.executor.execute(path, cmd))
-
-            self.outputter.info.write('\n')
+        with concurrent.futures.ThreadPoolExecutor(max_workers=jobs) as pool_executor:
+            futures = self._schedule_command(command, paths, pool_executor)
+            self._resolve_futures(futures)
 
         return self.results
 
@@ -58,6 +53,34 @@ class CLI(object):
 
     def find_command(self, command_name):
         return next((c for c in self.config['commands'] if c.name == command_name), None)
+
+    def _schedule_command(self, command, paths, pool_executor):
+        futures = dict()
+        for path, cmd in command.items(filter=paths):
+            if cmd is None:
+                continue
+
+            self.outputter.info.write('Running {0} for {1}:\n'.format(command.name, path))
+
+            futures[pool_executor.submit(self.executor.execute, path, cmd)] = path
+
+            self.outputter.info.write('\n')
+
+        return futures
+
+    def _resolve_futures(self, futures):
+        for future in concurrent.futures.as_completed(futures):
+            path = futures[future]
+            try:
+                self.results.add(future.result())
+            except Exception as exc:
+                self.results.add(radish.executor.ExecutionResult(99, 0, path))
+                self.outputter.error.write(
+                    'Command for path "{0}" generated an exception: {1}\n'.format(
+                        path,
+                        exc.__repr__()
+                    )
+                )
 
 
 def get_config_file(*filenames):

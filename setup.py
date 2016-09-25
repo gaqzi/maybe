@@ -37,6 +37,7 @@ extra_dependencies = []
 extra_test_dependencies = []
 if sys.version_info < (3, 0):
     extra_dependencies = [
+        'futures'
     ]
     extra_test_dependencies = [
         'mock',

@@ -54,6 +54,40 @@ class TestCli(object):
         def test_returns_none_when_nothing_found(self, cli):
             assert cli.find_command('wololooo') is None
 
+    @mock.patch('concurrent.futures.as_completed')
+    @mock.patch('concurrent.futures.ThreadPoolExecutor')
+    class TestRunParallelization(object):
+        def test_default_parallelization_of_1(self, futures_executor, as_completed, cli):
+            pool_executor = futures_executor.return_value
+
+            cli.run('test', ['extensions/rules/'])
+
+            futures_executor.assert_called_once_with(max_workers=1)
+            pool_executor.__enter__.return_value.submit.assert_called_once_with(mock.ANY, mock.ANY, mock.ANY)
+            as_completed.assert_called_once_with(mock.ANY)
+
+        def test_accepts_a_jobs_argument_that_sets_the_max_workers(self, futures_executor, _, cli):
+            cli.run('test', ['extensions/rules/'], jobs=3)
+
+            futures_executor.assert_called_once_with(max_workers=3)
+
+        def test_handles_exceptions_when_resolving_futures(self, futures_executor, as_completed,
+                                                           cli):
+            pool_executor = futures_executor.return_value
+            future = pool_executor.__enter__.return_value.submit.return_value
+            future.result.side_effect = Exception('Boom!')
+            as_completed.return_value.__iter__.return_value = [future]
+
+            cli.run('test', ['extensions/rules/'])
+
+            error_output = cli.outputter.error.streams[0].getvalue()
+            assert (
+                'Command for path "extensions/rules/" generated an exception: Exception('
+            ) in error_output
+            assert "'Boom!',)" in error_output
+            assert 'extensions/rules/' in cli.results.paths
+            assert not cli.results.success
+
     def test_changed_projects_returns_all_configured_paths_with_no_commits_given(self, cli):
         assert cli.changed_projects() == {'extensions/rules/', 'js/frontend/', 'js/mobile/'}
 
@@ -241,8 +275,7 @@ class TestMain(object):
 
     @mock.patch('radish.cli.CLI', autospec=True)
     class TestParallelization(object):
-        def test_runs_only_a_limited_number_of_projects_when_jobs_and_job_set(self, cli_mock,
-                                                                              outputter):
+        def _setup(self, cli_mock, outputter):
             results = ExecutionResults()
             results.add(ExecutionResult(0, 1.12, 'extensions/m000/'))
 
@@ -251,9 +284,22 @@ class TestMain(object):
             cli.changed_projects.return_value = ['extensions/first/', 'extensions/m000/']
             cli.run.return_value = results
 
+            return cli
+
+        def test_runs_only_a_limited_number_of_projects_when_jobs_and_job_set(self, cli_mock,
+                                                                              outputter):
+            cli = self._setup(cli_mock, outputter)
+
             assert_command(['command', 'test', '--jobs', '2', '--job', '1'], 0)
 
             assert 'in parallel as job 2/2' in cli.outputter.info.streams[0].getvalue()
             assert cli.run.call_count == 1
             args, kwargs = cli.run.call_args
             assert kwargs['paths'] == ['extensions/m000/']
+
+        def test_runs_all_in_parallel_when_no_job_index_specified(self, cli_mock, outputter):
+            cli = self._setup(cli_mock, outputter)
+
+            assert_command(['command', 'test', '--jobs', '2'], 0)
+
+            assert 'in parallel with 2 processes' in cli.outputter.info.streams[0].getvalue()
