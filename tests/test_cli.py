@@ -104,7 +104,7 @@ class TestCli(object):
 
         assert cli.results.success
         assert len(results.paths) == 3
-        assert results.paths == paths
+        assert sorted(results.paths) == sorted(paths)
 
     def test_passed_in_can_be_a_command_instance(self, cli):
         command = cli.find_command('test')
