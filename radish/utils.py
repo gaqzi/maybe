@@ -47,7 +47,7 @@ class TimeTaken(object):
             self._pluralize(int(hours), 'hour', 'hours'),
             self._pluralize(int(minutes), 'minute', 'minutes'),
             self._pluralize(round(seconds, 3), 'second', 'seconds')
-        ])))
+        ]))) or 'less than 0.000 seconds'
 
     __unicode__ = __str__
 
