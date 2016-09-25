@@ -57,6 +57,61 @@ OK
 All commands ended successfully and ran in 9.75s.
 ```
 
+### Parallelization
+
+Radish supports running your commands in parallel by passing in the `jobs`
+flag and specifying how many parallel jobs you want to run. This will
+then run this many projects at the same time. There's also support for
+parallelization where the running is maintained by something else,
+where radish splits up the work load and runs each node as a process
+of its own. This is how for instance
+[CircleCI manages parallelization][circleci-parallel].
+
+Example invocation on CircleCI:
+
+```shell
+$ radish command tests --jobs=2 --job=1
+Running command tests in parallel as job 2/2
+
+Changed paths:
+  - frontend/js/
+
+Running tests for frontend/js/:
+..........................
+OK
+
+frontend/js/: Success (4.75 seconds)
+
+Finished in 4.75 seconds.
+```
+
+Example of running in parallel:
+
+```shell
+$ radish command tests --jobs=2
+Running command tests in parallel with 2 processes
+
+Changed paths:
+  - app/
+  - frontend/js/
+
+Running tests for app/:
+.......
+OK
+
+Running tests for frontend/js/:
+..........................
+OK
+
+app/: Success (1.35 seconds)
+frontend/js/: Success (4.75 seconds)
+
+Cumulative run time: 6.05 seconds.
+Finished in 4.81 seconds.
+```
+
+[circleci-parallel]: https://circleci.com/docs/parallel-manual-setup/
+
 ## Configuration
 
 radish configuration is a yaml file named `Radishfile`, because I can.
