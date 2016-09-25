@@ -260,7 +260,7 @@ class TestMain(object):
                 'Changed paths:\n'
                 '\textensions/m000/\n\n'
                 'extensions/m000/: Success (1.12)\n\n'
-                'Commands finished in 1.12 seconds\n'
+                'Finished in less than 0.000 seconds\n'
             )
 
         def test_unsuccessful_command_run_exits_10(self, cli_mock):
@@ -307,3 +307,15 @@ class TestMain(object):
             args, kwargs = cli.run.call_args
             assert kwargs['jobs'] == 2
             assert 'in parallel with 2 processes' in cli.outputter.info.streams[0].getvalue()
+
+        def test_prints_actual_time_spent_running(self, cli_mock, outputter):
+            cli = self._setup(cli_mock, outputter)
+
+            assert_command(['command', 'test', '--jobs', '2'], 0)
+
+            run_time = (
+                'Cumulative run time: 1.12 seconds\n'
+                'Finished in less than 0.000 seconds\n'
+            )
+            assert run_time in cli.outputter.info.streams[0].getvalue()
+            assert cli.outputter.info.streams[0].getvalue().endswith(run_time)

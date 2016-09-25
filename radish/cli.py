@@ -212,10 +212,12 @@ Usage:
         cli.outputter.info.write('\t{0}\n'.format(project))
     cli.outputter.info.write('\n')
 
-    results = cli.run(
-        command_name=command,
-        paths=changed_projects,
-        jobs=jobs
+    results, actual_run_time = timer(
+        lambda: cli.run(
+            command_name=command,
+            paths=changed_projects,
+            jobs=jobs
+        )
     )
 
     for result in results:
@@ -227,6 +229,8 @@ Usage:
             )
         )
     cli.outputter.info.write('\n')
-    cli.outputter.info.write('Commands finished in {}\n'.format(results.run_time))
+    if jobs > 1:
+        cli.outputter.info.write('Cumulative run time: {}\n'.format(results.run_time))
+    cli.outputter.info.write('Finished in {}\n'.format(actual_run_time))
 
     raise RadishExit(0 if results else 10)
