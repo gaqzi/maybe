@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+import pytest
+
 from radish.path import Path
 
 
@@ -70,3 +72,14 @@ class TestPath(object):
 
     def test_path_can_be_concatenated_with_another_path(self):
         assert (Path('/') + Path('root')) == '/root'
+
+    class TestSorting(object):
+        def test_sorts_with_other_paths(self):
+            assert sorted([Path('/b'), Path('/a')]) == [Path('/a'), Path('/b')]
+
+        def test_sorts_against_strings(self):
+            assert sorted(['/b', Path('/a')]) == [Path('/a'), '/b']
+
+        def test_raises_not_implemented_when_sorting_for_others(self):
+            with pytest.raises(NotImplementedError):
+                sorted([1, Path('/a')])

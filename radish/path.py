@@ -2,6 +2,8 @@ from __future__ import unicode_literals
 
 import os
 
+import six
+
 
 class Path(object):
     GLOB_CHARACTER = '*'
@@ -85,3 +87,11 @@ class Path(object):
 
     def __radd__(self, other):
         return '{0}{1}'.format(other, self.path)
+
+    def __lt__(self, other):
+        if hasattr(other, 'path'):
+            return self.path < other.path
+        elif isinstance(other, six.string_types):
+            return self.path < other
+        else:
+            raise NotImplementedError("Don't know how to sort <Path>")
