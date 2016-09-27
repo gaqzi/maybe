@@ -54,7 +54,11 @@ Running tests for frontend/js/:
 ..........................
 OK
 
-All commands ended successfully and ran in 9.75s.
+extensions/cool-extension/: Success (5.13 seconds)
+frontend/js/: Success (4.75 seconds)
+
+Finished in 9.88 seconds
+```
 
 ## Configuration
 
