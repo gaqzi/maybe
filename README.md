@@ -55,6 +55,20 @@ Running tests for frontend/js/:
 OK
 
 All commands ended successfully and ran in 9.75s.
+
+## Configuration
+
+radish configuration is a yaml file named `Radishfile`, because I can.
+
+```yaml
+paths:
+  - extensions/*/  # Mark each subdirectory in extensions as a path
+  - frontend/js/
+  
+commands:  # Runs from the directory denoted by paths above
+  tests:
+    default: bin/rspec spec
+    frontend/js/: npm test
 ```
 
 ### Parallelization
@@ -111,21 +125,6 @@ Finished in 4.81 seconds.
 ```
 
 [circleci-parallel]: https://circleci.com/docs/parallel-manual-setup/
-
-## Configuration
-
-radish configuration is a yaml file named `Radishfile`, because I can.
-
-```yaml
-paths:
-  - extensions/*/  # Mark each subdirectory in extensions as a path
-  - frontend/js/
-  
-commands:  # Runs from the directory denoted by paths above
-  tests:
-    default: bin/rspec spec
-    frontend/js/: npm test
-```
 
 ## An example use case
 
